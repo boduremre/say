@@ -1,0 +1,22 @@
+Varyans ve Çarpıklık ile Zorluk Derecesi:
+Varyans: Puanların yayılımını gösterir. Yüksek varyans, öğrenciler arasında büyük bir fark olduğunu ve bu durumun genellikle sınavın zorluk düzeyinin arttığını işaret eder. Eğer varyans yüksekse, sınav zor demek mantıklıdır.
+
+Çarpıklık (Skewness): Dağılımın simetrikliğini ölçer. Eğer çarpıklık değeri sıfıra yakınsa, dağılım simetriktir ve öğrencilerin çoğu benzer seviyelerde performans gösteriyor olabilir. Eğer çarpıklık değeri pozitifse, dağılım sağa çarpıktır ve sınavda yüksek puan alan öğrenciler daha fazla olabilir. Negatif bir çarpıklık ise, düşük puanların daha fazla olduğunu gösterebilir.
+
+Durumunuzda:
+Varyans (348.495): Bu değer çok yüksek. Bu, öğrenciler arasında büyük bir fark olduğunu ve dolayısıyla sınavın zor olduğunu gösteriyor. Yüksek varyans genellikle zorlu bir sınavı işaret eder.
+
+Çarpıklık (0.0287): Bu değer sıfıra çok yakın ve dağılmanın oldukça simetrik olduğunu gösteriyor. Bu, sınavın kolay olduğunu gösterebilir, çünkü öğrencilerin çoğu benzer seviyelerde performans sergileyebilir.
+
+Çelişki Neden Oluyor?
+Burada, varyans ve çarpıklık farklı şeyleri ölçüyor. Varyans yüksek olsa da çarpıklık düşük ve simetrik olduğu için, farklı bir tür yorum yapılabilir. Örneğin:
+
+Varyans'a dayalı zorluk yorumu: Puanlar arasındaki büyük fark, sınavın zor olduğu anlamına gelir.
+Çarpıklık'a dayalı zorluk yorumu: Simetrik bir dağılım, sınavın genel olarak kolay olduğuna dair bir işaret olabilir.
+Bu iki değeri birleştirerek daha net bir analiz yapabiliriz. Örneğin:
+
+Çarpıklık + Varyans Kombinasyonu: Varyans çok yüksekse (sınav zor) ancak çarpıklık sıfıra yakınsa (dağılım simetrik), belki sınavın hem kolay hem zor olabilecek bir yapıda olduğunu söyleyebiliriz. Bazı öğrenciler çok iyi puan alırken bazıları zorlanmış olabilir.
+Daha Doğru Bir Yorum İçin:
+Varyans değerine öncelik verilebilir, çünkü bu, sınavın ne kadar zorluğunu yansıtan daha kesin bir ölçüdür. Çarpıklık çok simetrik olsa bile, yüksek varyans sınavın genellikle zor olduğunu gösterebilir.
+Çarpıklık, sınavın içeriği veya tarzı hakkında daha çok bilgi verebilir (örneğin, soru tiplerinin veya zorluk seviyelerinin dağılımı).
+Bu durumda, zorluk derecesini belirlemek için varyansı baz almanız daha mantıklı olacaktır.
