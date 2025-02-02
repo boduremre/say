@@ -175,7 +175,7 @@ class Sinavlar extends CI_Controller
         $variance = $this->sinav_puanlari_model->get_variance_puan(array("sinav_id" => $sinav_id));
         $puan_dagilimi = $this->sinav_puanlari_model->get_puan_dagilimi(array("sinav_id" => $sinav_id, "status !=" => 0));
 
-        $istatistikler = array(
+        $this->layout->data["istatistikler"] = array(
             "sinav_bilgisi" => $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id)),
             "toplam_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id)),
             "katilan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1)),
@@ -209,7 +209,6 @@ class Sinavlar extends CI_Controller
 
         //download_json("istatistikler.json", $istatistikler);
 
-        $this->layout->data["istatistikler"] = $istatistikler;
         $this->layout->set_view("report");
         $this->layout->render();
     }
