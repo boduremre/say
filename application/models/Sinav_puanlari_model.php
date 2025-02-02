@@ -159,7 +159,7 @@ class Sinav_puanlari_model extends CI_Model
      */
     public function get_stddev_puan($sinav_id): ?float
     {
-        $sql = "SELECT STDDEV(puan) as stddev FROM sinav_puanlari WHERE puan != 'G' AND sinav_id = ".$sinav_id;
+        $sql = "SELECT STDDEV(puan) as stddev FROM sinav_puanlari WHERE puan != 'G' AND sinav_id = " . $sinav_id;
         return $this->db->query($sql)->row()->stddev;
     }
 
@@ -201,7 +201,7 @@ class Sinav_puanlari_model extends CI_Model
         $this->db->select('kurum_kodu');
         $this->db->select_max('puan', 'max_puan');
         $this->db->select_min('puan', 'min_puan');
-        $this->db->select_avg('puan','avg_puan');
+        $this->db->select_avg('puan', 'avg_puan');
         $this->db->where($where);
         $this->db->where('puan !=', 'G'); // "G" notunu hariç tut
         $this->db->order_by($order_by); // "G" notunu hariç tut
@@ -223,6 +223,19 @@ class Sinav_puanlari_model extends CI_Model
         return $this->db->get($this->table_name)->row()->puan ?? null;
     }
 
+    public function get_ilce_ortalama($sinav_id)
+    {
+        $query = $this->db->query("
+        SELECT d.id AS ilce_id, d.isim AS ilce_adi, AVG(sp.puan) AS ilce_ortalama
+        FROM sinav_puanlar sp
+        JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
+        JOIN districts d ON o.ilce_id = d.id
+        WHERE sp.sinav_id = ?
+        GROUP BY d.id, d.isim
+    ", array($sinav_id));
+
+        return $query->result_array();
+    }
 
 
 }
