@@ -9,7 +9,7 @@
                     <a href="<?php echo site_url('sinavlar/index'); ?>" class="btn btn-sm btn-primary">
                         Sınavları Listele
                     </a>
-                    <a href="<?php echo site_url('sinavlar/do/analyze/').$sinav->id; ?>" class="btn btn-sm btn-secondary">
+                    <a href="<?php echo site_url('sinavlar/do/analyze/').$sinav->id; ?>" class="btn btn-sm btn-success">
                         Analizi Başlat
                     </a>
                 </div>

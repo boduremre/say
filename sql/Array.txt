@@ -1,0 +1,122 @@
+Array
+(
+    [sinav_bilgisi] => stdClass Object
+        (
+            [id] => 9
+            [sinav_kodu] => SNV-384
+            [sinav_adi] => 10. SINIF COĞRAFYA DERSİ 1. DÖNEM 2. İL GENELİ ORTAK SINAVI
+            [aciklama] => 10. SINIF COĞRAFYA DERSİ 1. DÖNEM 2. İL GENELİ ORTAK SINAVI
+            [sure] => 40
+            [sinif_id] => 7
+            [soru_sayisi] => 10
+            [onay_durumu] => 1
+            [duzenlenebilir] => 1
+            [yayin_durumu] => 2
+            [dogrulama_kodu] => 1b9a8c14-a677-4eae-b898-6e9954330430
+            [user_id] => 1
+            [baslangic_tarihi] => 2025-01-31 10:00:00
+            [bitis_tarihi] => 2025-01-31 10:00:00
+            [ders_id] => 11
+            [dosya_adresi] => 
+            [secenek_sayisi] => 0
+            [cevap_anahtari] => 
+            [created_at] => 2025-01-31 23:49:39
+            [updated_at] => 2025-02-02 17:30:21
+            [ders_adi] => Coğrafya
+            [sinif_adi] => 10. Sınıf
+        )
+
+    [toplam_ogrenci_sayisi] => 252
+    [katilan_ogrenci_sayisi] => 249
+    [katilmayan_ogrenci_sayisi] => 3
+    [min_puan] => 17
+    [max_puan] => 100
+    [ranj] => 83
+    [avg_puan] => 58.1124
+    [median_puan] => 57
+    [mode] => stdClass Object
+        (
+            [puan] => 50
+            [tekrar_sayisi] => 12
+        )
+
+    [standart_sapma] => 18.6305
+    [varyans] => 348.49536857106
+    [determine_exam_difficulty_based_on_variance] => SINAV ÇOK ZOR
+    [skewness] => 0.028740751063796
+    [interpret_skewness] => Dağılım simetrik
+    [skewness_determine_exam_difficulty] => Sınav Kolay 
+    [determine_exam_difficulty_variance_skewness] => Sınav Çok Zor
+    [DİKKAT] => Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.
+    [basari_orani] => 69.88%
+    [puan_kurumlar] => Array
+        (
+            [0] => Array
+                (
+                    [kurum_kodu] => 223456
+                    [KURUM_ADI] => Düzce Arsal Anadolu Lisesi
+                    [ogrenci_sayisi] => 171
+                    [max_puan] => 94
+                    [min_puan] => 17
+                    [avg_puan] => 52.9825
+                )
+
+            [1] => Array
+                (
+                    [kurum_kodu] => 99987052
+                    [KURUM_ADI] => ÖZEL DÜZCE UĞUR FEN LİSESİ
+                    [ogrenci_sayisi] => 11
+                    [max_puan] => 90
+                    [min_puan] => 41
+                    [avg_puan] => 71.2727
+                )
+
+            [2] => Array
+                (
+                    [kurum_kodu] => 974763
+                    [KURUM_ADI] => Yığılca Anadolu İmam Hatip Lisesi
+                    [ogrenci_sayisi] => 8
+                    [max_puan] => 100
+                    [min_puan] => 80
+                    [avg_puan] => 88.8750
+                )
+
+        )
+
+    [puan_ilceler] => Array
+        (
+            [0] => Array
+                (
+                    [DistrictID] => 315
+                    [ilce_adi] => MERKEZ
+                    [ilce_ortalama] => 53.7923
+                )
+
+            [1] => Array
+                (
+                    [DistrictID] => 316
+                    [ilce_adi] => YIĞILCA
+                    [ilce_ortalama] => 79.0000
+                )
+
+        )
+
+    [ogr_say_ilceler] => Array
+        (
+            [0] => Array
+                (
+                    [DistrictID] => 315
+                    [ilce_adi] => MERKEZ
+                    [ogr_say] => 183
+                )
+
+            [1] => Array
+                (
+                    [DistrictID] => 316
+                    [ilce_adi] => YIĞILCA
+                    [ogr_say] => 9
+                )
+
+        )
+
+)

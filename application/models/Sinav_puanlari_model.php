@@ -271,11 +271,13 @@ class Sinav_puanlari_model extends CI_Model
     public function get_min_max_avg_puan_kurum(array $where = array(), string $order_by = "avg_puan asc"): array|object
     {
         $this->db->select('sinav_puanlari.kurum_kodu, okullar.KURUM_ADI');
+        $this->db->select("districts.DistrictName AS ilce_adi");
         $this->db->select('COUNT(sinav_puanlari.id) as ogrenci_sayisi');
         $this->db->select_max('sinav_puanlari.puan', 'max_puan');
         $this->db->select_min('sinav_puanlari.puan', 'min_puan');
-        $this->db->select_avg('sinav_puanlari.puan', 'avg_puan');         // öğrenci sayıları gelecek
+        $this->db->select_avg('sinav_puanlari.puan', 'avg_puan');
         $this->db->join('okullar', 'sinav_puanlari.kurum_kodu = okullar.kurum_kodu');
+        $this->db->join('districts', 'okullar.ILCE_ID = districts.DistrictID');
         $this->db->where($where);
         $this->db->where('status !=', 0); // "G" notunu hariç tut
         $this->db->order_by($order_by);
@@ -302,22 +304,23 @@ class Sinav_puanlari_model extends CI_Model
         }
 
         // Ranj = Maksimum Puan - Minimum Puan
-        return (int) $query['max_puan'] - (int) $query['min_puan'];
+        return (int)$query['max_puan'] - (int)$query['min_puan'];
     }
 
     /**
      * @param array $where
+     * @param string $order_by
      * @return mixed
      */
-    public function get_ilce_ortalama(array $where = array()): mixed
+    public function get_ilce_ortalama(array $where = array(), string $order_by = "ORDER BY sp.puan ASC"): mixed
     {
         $query = $this->db->query(
-            "SELECT d.DistrictID, d.DistrictName AS ilce_adi, AVG(sp.puan) AS ilce_ortalama" . "
+            "SELECT d.DistrictID, d.DistrictName AS ilce_adi, AVG(sp.puan) AS ilce_ortalama, MIN(sp.puan) as min_puan, MAX(sp.puan) as max_puan, COUNT(sp.puan) AS ogr_sayisi" . "
                     FROM sinav_puanlari sp
                     JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
                     JOIN districts d ON o.ILCE_ID = d.DistrictID
-                    WHERE sp.sinav_id = ?
-                    GROUP BY d.DistrictID, d.DistrictName", $where);
+                    WHERE sp.status = 1 AND sp.sinav_id = ? 
+                    GROUP BY d.DistrictID, d.DistrictName " . $order_by, $where);
 
         return $query->result_array();
     }
@@ -329,7 +332,7 @@ class Sinav_puanlari_model extends CI_Model
                     FROM sinav_puanlari sp
                     JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
                     JOIN districts d ON o.ILCE_ID = d.DistrictID
-                    WHERE sp.sinav_id = ?
+                    WHERE sp.status = 1 AND sp.sinav_id = ?
                     GROUP BY d.DistrictID, d.DistrictName", $where);
 
         return $query->result_array();
@@ -466,11 +469,17 @@ class Sinav_puanlari_model extends CI_Model
         $sum_x = array_sum($scores1);
         $sum_y = array_sum($scores2);
 
-        $sum_x_squared = array_sum(array_map(function($x) { return $x * $x; }, $scores1));
-        $sum_y_squared = array_sum(array_map(function($y) { return $y * $y; }, $scores2));
+        $sum_x_squared = array_sum(array_map(function ($x) {
+            return $x * $x;
+        }, $scores1));
+        $sum_y_squared = array_sum(array_map(function ($y) {
+            return $y * $y;
+        }, $scores2));
 
         // Çarpımları topla
-        $sum_xy = array_sum(array_map(function($x, $y) { return $x * $y; }, $scores1, $scores2));
+        $sum_xy = array_sum(array_map(function ($x, $y) {
+            return $x * $y;
+        }, $scores1, $scores2));
 
         // Pearson korelasyonunu hesapla
         $numerator = $sum_xy - (($sum_x * $sum_y) / $n);
@@ -512,5 +521,135 @@ class Sinav_puanlari_model extends CI_Model
             'correlation' => $correlation,
             'interpretation' => $interpretation
         ];
+    }
+
+    // Veritabanından puanları çekme ve çarpıklık grafiği oluşturma
+    public function plot_skewness_graph($sinav_id): string
+    {
+        // Veritabanından puanları çek
+        $this->db->select("puan");
+        $this->db->from($this->table_name);
+        $this->db->where(array("sinav_id" => $sinav_id, "status !=" => 0));
+
+        $data = $this->db->get()->result_array();
+
+        // Eğer puan verisi yoksa, işlem yapma
+        if (empty($data)) {
+            return "Veri yok.";
+        }
+
+        // Puanları diziye aktar
+        $scores = array_map(function ($row) {
+            return $row['puan'];
+        }, $data);
+
+        // Histogram için ayarları yap
+        $width = 600;
+        $height = 400;
+        $padding = 50; // Kenar boşlukları
+
+        // GD kütüphanesiyle bir resim oluştur
+        $image = imagecreatetruecolor($width, $height);
+
+        // Renkleri tanımla
+        $background_color = imagecolorallocate($image, 255, 255, 255);
+        $bar_color = imagecolorallocate($image, 0, 102, 204);
+        $text_color = imagecolorallocate($image, 0, 0, 0);
+        $label_color = imagecolorallocate($image, 255, 0, 0); // Öğrenci sayısı yazısı için kırmızı renk
+
+        // Arka planı beyaz yap
+        imagefill($image, 0, 0, $background_color);
+
+        // Puan aralığını ve bin sayısını ayarla
+        $num_bins = 10;
+        $min_value = min($scores);
+        $max_value = max($scores);
+        $range = $max_value - $min_value;
+        $bin_width = $range / $num_bins;
+
+        // Bin sıklıklarını hesapla
+        $frequencies = array_fill(0, $num_bins, 0);
+        foreach ($scores as $score) {
+            $bin = (int)(($score - $min_value) / $bin_width);
+            if ($bin == $num_bins) {
+                $bin--; // Son bin için istisna
+            }
+            $frequencies[$bin]++;
+        }
+
+        // Maksimum frekans
+        $max_frequency = max($frequencies);
+
+        // Histogram çubuklarını çiz
+        $bar_width = ($width - 2 * $padding) / $num_bins;
+        for ($i = 0; $i < $num_bins; $i++) {
+            $bar_height = ($frequencies[$i] / $max_frequency) * ($height - 2 * $padding);
+            $x1 = $padding + $i * $bar_width;
+            $y1 = $height - $padding;
+            $x2 = $x1 + $bar_width - 2;
+            $y2 = $height - $padding - $bar_height;
+
+            // Çubukları çiz
+            imagefilledrectangle($image, $x1, $y1, $x2, $y2, $bar_color);
+
+            // X ekseni etiketlerini ekle (puan aralıkları)
+            $bin_label = round($min_value + ($i * $bin_width)) . "-" . round($min_value + (($i + 1) * $bin_width));
+            imagestring($image, 3, $x1, $height - 40, $bin_label, $text_color);
+
+            // Çubukların üstüne öğrenci sayısını yazdır
+            $student_count = $frequencies[$i];
+            imagestring($image, 4, $x1 + ($bar_width / 4), $y2 - 15, $student_count, $label_color);
+        }
+
+        // Y ekseni etiketlerini ekle (frekans değerleri)
+        for ($i = 0; $i <= $max_frequency; $i += ceil($max_frequency / 5)) {
+            $y_pos = $height - $padding - ($i / $max_frequency) * ($height - 2 * $padding);
+            imagestring($image, 3, 10, $y_pos, $i, $text_color);
+        }
+
+        // Ekseni çiz (X ve Y)
+        imageline($image, $padding, $padding, $padding, $height - $padding, $text_color); // Y Ekseni
+        imageline($image, $padding, $height - $padding, $width - $padding, $height - $padding, $text_color); // X Ekseni
+
+        // Başlık ekle
+        imagestring($image, 5, $width / 2 - 70, 10, "", $text_color);
+
+        // Resmi kaydedeceğimiz dizin (public/uploads klasörü)
+        $upload_path = FCPATH . 'uploads/graphs/';
+        if (!file_exists($upload_path)) {
+            mkdir($upload_path, 0777, true); // Klasör yoksa oluştur
+        }
+
+        // Resim adını oluştur
+        $image_filename = 'skewness_' . $sinav_id . '.png';
+        $image_path = $upload_path . $image_filename;
+
+        // PNG olarak kaydet
+        imagepng($image, $image_path);
+        imagedestroy($image);
+
+        // Resmin URL'sini döndür
+        return base_url('uploads/graphs/' . $image_filename);
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    public function get_puan_dagilimi(array $where = array()): array
+    {
+        $this->db->select("CASE 
+            WHEN puan BETWEEN 0 AND 49 THEN '0 - 49 ARASI'
+            WHEN puan BETWEEN 50 AND 59 THEN '50 - 59 ARASI'
+            WHEN puan BETWEEN 60 AND 69 THEN '60 - 69 ARASI'
+            WHEN puan BETWEEN 70 AND 84 THEN '70 - 84 ARASI'
+            WHEN puan BETWEEN 85 AND 100 THEN '85 - 100 ARASI'
+            ELSE 'Diğer' END AS puan_araligi, COUNT(*) as ogrenci_sayisi");
+        $this->db->from($this->table_name);
+        $this->db->where($where);
+        $this->db->group_by("puan_araligi");
+        $this->db->order_by("puan_araligi", "desc");
+
+        return $this->db->get()->result_array();
     }
 }

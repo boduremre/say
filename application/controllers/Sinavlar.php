@@ -13,6 +13,8 @@ class Sinavlar extends CI_Controller
 
         //load helper
         $this->load->helper("guid");
+
+        $this->layout->title = "Sınavlar";
     }
 
     /**
@@ -137,6 +139,9 @@ class Sinavlar extends CI_Controller
      */
     public function do_analyze(string $sinav_id): void
     {
+        error_reporting(0);
+        ini_set('display_errors', 0);
+
         $this->load->model('sinav_puanlari_model');
 
         //Merkezi Eğilim Ölçütleri (Ortalama, Medyan, Mod)
@@ -168,17 +173,23 @@ class Sinavlar extends CI_Controller
         //      Alt yüzdelik dilimde çok fazla öğrenci varsa, başarı seviyesi düşük olabilir.
         $skewness = $this->sinav_puanlari_model->calculate_skewness($sinav_id);
         $variance = $this->sinav_puanlari_model->get_variance_puan(array("sinav_id" => $sinav_id));
+        $puan_dagilimi = $this->sinav_puanlari_model->get_puan_dagilimi(array("sinav_id" => $sinav_id, "status !=" => 0));
 
         $istatistikler = array(
             "sinav_bilgisi" => $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id)),
             "toplam_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id)),
             "katilan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1)),
             "katilmayan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 0)),
+            "basarili_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1, "puan>=" => 50)),
+            "basarisiz_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1, "puan<" => 50)),
+            "basari_orani" => $this->sinav_puanlari_model->get_basari_orani($sinav_id, 50),
             "min_puan" => $this->sinav_puanlari_model->get_min_puan(array('sinav_id' => $sinav_id)),
             "max_puan" => $this->sinav_puanlari_model->get_max_puan(array('sinav_id' => $sinav_id)),
             "ranj" => $this->sinav_puanlari_model->get_ranj($sinav_id),
             "avg_puan" => $this->sinav_puanlari_model->get_avg_puan(array('sinav_id' => $sinav_id)),
             "median_puan" => $this->sinav_puanlari_model->get_median_puan(array('sinav_id' => $sinav_id)),
+            "puan_dagilimi" => $puan_dagilimi,
+            "puan_dagilim_grafigi" => $this->draw_bar_chart($puan_dagilimi),
             "mode" => $this->sinav_puanlari_model->get_mode_puan($sinav_id),
             "standart_sapma" => $this->sinav_puanlari_model->get_stddev_puan($sinav_id),
             "varyans" => $variance,
@@ -186,19 +197,21 @@ class Sinavlar extends CI_Controller
             "skewness" => $skewness,
             "interpret_skewness" => $this->sinav_puanlari_model->interpret_skewness($skewness),
             "skewness_determine_exam_difficulty" => $this->sinav_puanlari_model->determine_exam_difficulty($skewness),
+            "skewness_graph_link" => $this->sinav_puanlari_model->plot_skewness_graph($sinav_id),
             "determine_exam_difficulty_variance_skewness" => $this->sinav_puanlari_model->determine_exam_difficultyy($variance, $skewness),
-            "DİKKAT" =>"Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.",
-            "basari_orani" => $this->sinav_puanlari_model->get_basari_orani($sinav_id, 50) . "%",
-            "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id)),
+            "DİKKAT" => "Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.",
+            "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "ilce_adi asc, KURUM_ADI asc"),
+            "puan_kurumlar_sirali" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "avg_puan desc"),
             "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id)),
+            "puan_ilceler_sirali" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY sp.puan DESC"),
             "ogr_say_ilceler" => $this->sinav_puanlari_model->get_ilce_ogr_say(array("sinav_id" => $sinav_id)),
         );
 
-        pa($istatistikler);
-
         //download_json("istatistikler.json", $istatistikler);
 
-        //$this->layout->render();
+        $this->layout->data["istatistikler"] = $istatistikler;
+        $this->layout->set_view("report");
+        $this->layout->render();
     }
 
     public function excel_upload(): void
@@ -259,4 +272,68 @@ class Sinavlar extends CI_Controller
         );
     }
 
+    /**
+     * @param array $puan_dagilimi
+     * @return string
+     */
+    private function draw_bar_chart(array $puan_dagilimi = array()): string
+    {
+        // Genişlik ve yükseklik ayarları
+        $width = 800;
+        $height = 340;
+        $bar_height = 30;
+        $margin = 50;
+        $label_margin = 140; // Etiketlerin genişliği
+
+        // Grafik alanı oluştur
+        $image = imagecreatetruecolor($width, $height);
+
+        // Renk tanımları
+        $white = imagecolorallocate($image, 255, 255, 255);
+        $black = imagecolorallocate($image, 0, 0, 0);
+        $gray = imagecolorallocate($image, 0, 102, 204);
+
+        // Arka planı beyaz yap
+        imagefilledrectangle($image, 0, 0, $width, $height, $white);
+
+        // Başlık ekle
+        $font = 5;
+        $title = "PUAN DAGILIMI";
+        imagestring($image, $font, ($width / 2) - (strlen($title) * imagefontwidth($font)) / 2, 10, $title, $black);
+
+        // Y eksenindeki puan aralıklarının toplam sayısını al
+        $num_bars = count($puan_dagilimi);
+        $max_value = max(array_column($puan_dagilimi, 'ogrenci_sayisi'));
+
+        foreach ($puan_dagilimi as $index => $data) {
+            $y1 = $margin + $index * ($bar_height + 20);
+            $y2 = $y1 + $bar_height;
+            $bar_width = ($data['ogrenci_sayisi'] / $max_value) * ($width - $label_margin - $margin);
+
+            // Çubuğu çiz
+            imagefilledrectangle($image, $label_margin, $y1, $label_margin + $bar_width, $y2, $gray);
+
+            // Çubuk üstüne öğrenci sayısını yaz
+            imagestring($image, $font, $label_margin + $bar_width + 10, $y1 + ($bar_height / 4), $data['ogrenci_sayisi'], $black);
+
+            // Y eksenine puan aralıklarını yaz
+            imagestring($image, $font, 10, $y1 + ($bar_height / 4), $data['puan_araligi'], $black);
+        }
+
+        // Y ekseni için çizgi çiz
+        imageline($image, $label_margin, $margin - 10, $label_margin, $height - $margin, $black);
+
+        // Grafiği dosya olarak kaydetme
+        $upload_dir = FCPATH . 'uploads/graphs/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true); // Klasör yoksa oluştur
+        }
+
+        $file_path = $upload_dir . 'puan_dagilimi_' . time() . '.png';
+        imagepng($image, $file_path);
+        imagedestroy($image);
+
+        // Dosya yolunu döndür
+        return 'uploads/graphs/' . basename($file_path);
+    }
 }

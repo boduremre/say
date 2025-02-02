@@ -58,4 +58,22 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("body").on('click', '.btn-copy', async function () { // async ekledik
+        // copyable-content içeriğini al
+        let content = document.getElementById('copyable-content').innerHTML;
+
+        try {
+            // HTML içeriğini Clipboard'a kopyala
+            const blob = new Blob([content], { type: "text/html" });
+            const clipboardItem = new ClipboardItem({ "text/html": blob });
+
+            await navigator.clipboard.write([clipboardItem]); // async-await düzgün çalışır
+
+            alert("İçerik başarıyla kopyalandı! Word'e yapıştırabilirsiniz.");
+        } catch (err) {
+            console.error("Kopyalama başarısız:", err);
+            alert("Kopyalama işlemi desteklenmiyor veya başarısız oldu!");
+        }
+    });
 });

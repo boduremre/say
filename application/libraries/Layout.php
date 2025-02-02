@@ -35,6 +35,15 @@ class Layout
     }
 
     /**
+     * @param $view_name
+     * @return void
+     */
+    function set_view($view_name): void
+    {
+        $this->view = $view_name;
+    }
+
+    /**
      * @return void
      */
     function render(): void
