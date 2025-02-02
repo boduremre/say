@@ -13,9 +13,6 @@ class Sinavlar extends CI_Controller
 
         //load helper
         $this->load->helper("guid");
-
-        //set variables
-        $this->layout->data["title"] = "Sınavlar";
     }
 
     /**
@@ -28,9 +25,6 @@ class Sinavlar extends CI_Controller
         $this->layout->render();
     }
 
-    /**
-     * @return void
-     */
     /**
      * @return void
      */
@@ -104,7 +98,8 @@ class Sinavlar extends CI_Controller
             "user_id" => $this->ion_auth->user()->row()->id,
         );
 
-        $update = $this->sinavlar_model->update($this->input->post("dogrulama_kodu"), $form_values);
+        $dogrulama_kodu = $this->input->post("dogrulama_kodu", TRUE);
+        $update = $this->sinavlar_model->update(array("dogrulama_kodu" => $dogrulama_kodu), $form_values);
         if ($update)
             swal("İşlem Başarılı", "Sınav başarıyla güncellendi!", "sinavlar");
         else
@@ -137,33 +132,81 @@ class Sinavlar extends CI_Controller
 
     /**
      * @desc Kaydedilen sınavın analiz edilmesini sağlar.
-     * @param string $id
+     * @param string $sinav_id
      * @return void
      */
-    public function do_analyze(string $id): void
+    public function do_analyze(string $sinav_id): void
     {
         $this->load->model('sinav_puanlari_model');
+
+        //Merkezi Eğilim Ölçütleri (Ortalama, Medyan, Mod)
+        //    Bu ölçütler, puanların genel dağılımını anlamamıza yardımcı olur.
+        //
+        //    Ortalama (Mean): Tüm puanların toplamının öğrenci sayısına bölünmesiyle elde edilir.
+        //    Medyan (Median): Puanlar küçükten büyüğe sıralandığında tam ortadaki değerdir.
+        //    Mod (Mode): En sık tekrar eden puandır.
+        //
+        //    Yorum:
+        //      Ortalama yüksekse, genel başarı seviyesi yüksektir.
+        //      Medyan, aşırı uç değerlerden etkilenmez ve genel başarı eğilimini daha iyi yansıtır.
+        //      Mod, hangi puanın en fazla alındığını gösterir.
+
+        //Yayılım Dağılım Ölçütleri
+        //    Standart sapma yüksekse, öğrenciler arasındaki başarı farkı fazladır.
+        //    Standart sapma düşükse, öğrencilerin başarı düzeyi birbirine yakındır.
+        //    Çeyrekler, başarının belirli gruplara nasıl dağıldığını gösterir.
+
+        //    3. Başarı Yüzdeleri ve Geçme-Kalma Analizi
+        //    Öğrencilerin başarı seviyelerini belirli yüzdelik dilimlere ayırarak analiz edebiliriz.
+        //
+        //    Başarı Oranı: Belirli bir eşiğin (örneğin 50 puan) üzerinde olan öğrencilerin yüzdesi.
+        //    Üst Yüzdelik Dilimler (Top %10, %25): En başarılı öğrencileri belirler.
+        //    Alt Yüzdelik Dilimler (Bottom %10, %25): En düşük başarı gösteren öğrencileri belirler.
+        //
+        //    Yorum:
+        //      Eğer üst yüzdelik dilimde çok az öğrenci varsa, başarılı öğrenci sayısı düşük olabilir.
+        //      Alt yüzdelik dilimde çok fazla öğrenci varsa, başarı seviyesi düşük olabilir.
+        $skewness = $this->sinav_puanlari_model->calculate_skewness($sinav_id);
+        $variance = $this->sinav_puanlari_model->get_variance_puan(array("sinav_id" => $sinav_id));
+
         $istatistikler = array(
-            "sinav_bilgisi" => $this->sinavlar_model->get(array('sinavlar.id' => $id)),
-            "toplam_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $id)),
-            "min_puan" => $this->sinav_puanlari_model->get_min_puan(array('sinav_id' => $id)),
-            "max_puan" => $this->sinav_puanlari_model->get_max_puan(array('sinav_id' => $id)),
-            "avg_puan" => $this->sinav_puanlari_model->get_avg_puan(array('sinav_id' => $id)),
-            "standart_sapma" => $this->sinav_puanlari_model->get_stddev_puan($id),
-            "puan_kurum" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $id)),
+            "sinav_bilgisi" => $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id)),
+            "toplam_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id)),
+            "katilan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1)),
+            "katilmayan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 0)),
+            "min_puan" => $this->sinav_puanlari_model->get_min_puan(array('sinav_id' => $sinav_id)),
+            "max_puan" => $this->sinav_puanlari_model->get_max_puan(array('sinav_id' => $sinav_id)),
+            "ranj" => $this->sinav_puanlari_model->get_ranj($sinav_id),
+            "avg_puan" => $this->sinav_puanlari_model->get_avg_puan(array('sinav_id' => $sinav_id)),
+            "median_puan" => $this->sinav_puanlari_model->get_median_puan(array('sinav_id' => $sinav_id)),
+            "mode" => $this->sinav_puanlari_model->get_mode_puan($sinav_id),
+            "standart_sapma" => $this->sinav_puanlari_model->get_stddev_puan($sinav_id),
+            "varyans" => $variance,
+            "determine_exam_difficulty_based_on_variance" => $this->sinav_puanlari_model->determine_exam_difficulty_based_on_variance($variance),
+            "skewness" => $skewness,
+            "interpret_skewness" => $this->sinav_puanlari_model->interpret_skewness($skewness),
+            "skewness_determine_exam_difficulty" => $this->sinav_puanlari_model->determine_exam_difficulty($skewness),
+            "determine_exam_difficulty_variance_skewness" => $this->sinav_puanlari_model->determine_exam_difficultyy($variance, $skewness),
+            "DİKKAT" =>"Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.",
+            "basari_orani" => $this->sinav_puanlari_model->get_basari_orani($sinav_id, 50) . "%",
+            "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id)),
+            "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id)),
+            "ogr_say_ilceler" => $this->sinav_puanlari_model->get_ilce_ogr_say(array("sinav_id" => $sinav_id)),
         );
 
-        download_json("istatistikler.json", $istatistikler);
+        pa($istatistikler);
+
+        //download_json("istatistikler.json", $istatistikler);
 
         //$this->layout->render();
     }
 
     public function excel_upload(): void
     {
-        // gelen istek post isteği mi
+        // Gelen istek post isteği mi kontrol et
         is_post_request();
 
-        //load library and models
+        // Kütüphane ve modelleri yükle
         $this->load->library('php_excel');
         $this->load->model('sinav_puanlari_model');
 
@@ -173,29 +216,47 @@ class Sinavlar extends CI_Controller
         if (isset($_FILES["file"]["name"])) {
             $path = $_FILES["file"]["tmp_name"];
             $object = PHPExcel_IOFactory::load($path);
+
+            $batch_data = []; // Tüm verileri bu dizide toplayacağız
+
             foreach ($object->getWorksheetIterator() as $worksheet) {
                 $highestRow = $worksheet->getHighestRow();
-                //$highestColumn = $worksheet->getHighestColumn();
+
                 for ($row = 2; $row <= $highestRow; $row++) {
                     $ogr_no = $worksheet->getCellByColumnAndRow(1, $row)->getValue();
                     $ogr_adi_soyadi = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
                     $puan = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
                     $kurum_kodu = $worksheet->getCellByColumnAndRow(4, $row)->getValue();
 
-                    $data = array(
+                    $batch_data[] = array(
                         "ogr_no" => $ogr_no,
                         "ogr_adi_soyadi" => $ogr_adi_soyadi,
                         "puan" => $puan,
                         "kurum_kodu" => $kurum_kodu,
                         "sinav_id" => $sinav_id,
                         "user_id" => $this->ion_auth->user()->row()->id,
+                        "status" => $puan == "G" ? 0 : 1,
                     );
-
-                    $result = $this->sinav_puanlari_model->create($data);
                 }
+            }
+
+            // Eğer dizi boş değilse toplu ekleme yap
+            if (!empty($batch_data)) {
+                $result = $this->sinav_puanlari_model->insert_batch($batch_data);
             }
         }
 
-        _alert_message($result, "sinavlar/analyze/$sinav_id", "Toplu puan listesi (Toplam Öğrenci Sayısı: " . --$highestRow . ") başarıyla aktarıldı.");
+        // Sınav durumunu "dosya yüklendi" olarak güncelle
+        $update = $this->sinavlar_model->update(
+            array("sinavlar.id" => $sinav_id),
+            array("sinavlar.yayin_durumu" => 2)
+        );
+
+        _alert_message(
+            $result || $update,
+            "sinavlar/analyze/$sinav_id",
+            "Toplu puan listesi (Toplam Öğrenci Sayısı: " . count($batch_data) . ") başarıyla aktarıldı."
+        );
     }
+
 }
