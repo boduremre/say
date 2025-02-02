@@ -107,12 +107,17 @@ class Sinavlar_model extends CI_Model
         }
     }
 
-    public function update($dogrulama_kodu, $data = array())
+    /**
+     * @param array $where
+     * @param array $data
+     * @return bool
+     */
+    public function update(array $where = array(), array $data = array()): bool
     {
-        return $this->db->update($this->table_name, $data, array('dogrulama_kodu' => $dogrulama_kodu));
+        return $this->db->update($this->table_name, $data, $where);
     }
 
-    public function delete($where = array())
+    public function delete(array $where = array())
     {
         return $this->db->where($where)->delete($this->table_name);
     }
