@@ -209,6 +209,12 @@ class Sinavlar extends CI_Controller
 
         //download_json("istatistikler.json", $istatistikler);
 
+         // Sınav durumunu "dosya yüklendi" olarak güncelle
+         $update = $this->sinavlar_model->update(
+            array("sinavlar.id" => $sinav_id),
+            array("sinavlar.yayin_durumu" => 1)
+        );
+
         $this->layout->set_view("report");
         $this->layout->render();
     }
@@ -235,10 +241,10 @@ class Sinavlar extends CI_Controller
                 $highestRow = $worksheet->getHighestRow();
 
                 for ($row = 2; $row <= $highestRow; $row++) {
-                    $ogr_no = $worksheet->getCellByColumnAndRow(1, $row)->getValue();
-                    $ogr_adi_soyadi = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
-                    $puan = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
-                    $kurum_kodu = $worksheet->getCellByColumnAndRow(4, $row)->getValue();
+                    $ogr_no = $worksheet->getCellByColumnAndRow(0, $row)->getValue();
+                    $ogr_adi_soyadi = $worksheet->getCellByColumnAndRow(1, $row)->getValue();
+                    $puan = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
+                    $kurum_kodu = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
 
                     $batch_data[] = array(
                         "ogr_no" => $ogr_no,
