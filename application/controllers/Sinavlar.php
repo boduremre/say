@@ -132,6 +132,28 @@ class Sinavlar extends CI_Controller
         $this->layout->render();
     }
 
+    public function truncate_analyze(): void
+    {
+        is_post_request();
+
+        $this->load->model('sinav_puanlari_model');
+
+        $sinav_id = $this->input->post("sinav_id", TRUE);
+
+        $delete = $this->sinav_puanlari_model->delete(array('sinav_id' => $sinav_id));
+        if($delete){
+            $form_values = array(
+                "yayin_durumu" => 0,
+            );
+
+            $update = $this->sinavlar_model->update(array("id" => $sinav_id), $form_values);
+            if ($update)
+                swal("İşlem Başarılı", "Sınav analizi başarıyla sıfırlandı!", "sinavlar");
+        }
+
+        $this->layout->render();
+    }
+
     /**
      * @desc Kaydedilen sınavın analiz edilmesini sağlar.
      * @param string $sinav_id
@@ -205,18 +227,21 @@ class Sinavlar extends CI_Controller
             "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY ilce_adi asc"),
             "puan_ilceler_sirali" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY sp.puan DESC"),
             "ogr_say_ilceler" => $this->sinav_puanlari_model->get_ilce_ogr_say(array("sinav_id" => $sinav_id)),
+            "genel_mudurluk_ortalama" => $this->sinav_puanlari_model->get_genel_mudurluk_ortalama(array("sinav_id" => $sinav_id)),
         );
 
         //download_json("istatistikler.json", $istatistikler);
 
-        // Sınav durumunu "dosya yüklendi" olarak güncelle
+        // Sınav durumunu Analiz Tamamlandı olarak güncelle
         $update = $this->sinavlar_model->update(
             array("sinavlar.id" => $sinav_id),
             array("sinavlar.yayin_durumu" => 1)
         );
 
-        $this->layout->set_view("report");
-        $this->layout->render();
+        if($update){
+            $this->layout->set_view("report");
+            $this->layout->render();
+        }
     }
 
     public function excel_upload(): void
@@ -273,7 +298,7 @@ class Sinavlar extends CI_Controller
         _alert_message(
             $result || $update,
             "sinavlar/analyze/$sinav_id",
-            "Toplu puan listesi (Toplam Öğrenci Sayısı: " . count($batch_data) . ") başarıyla aktarıldı."
+            "Toplu puan listesi (Toplam Öğrenci Sayısı: " . count($batch_data) . ") başarıyla aktarıldı. Analiz işlemine başlayabilirsiniz.",
         );
     }
 
