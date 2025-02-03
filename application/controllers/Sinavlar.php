@@ -109,13 +109,13 @@ class Sinavlar extends CI_Controller
     }
 
     /**
-     * @param string $dogrulama_kodu
+     * @param string $sinav_id
      * @return void
      */
-    public function delete(string $dogrulama_kodu): void
+    public function delete(string $sinav_id): void
     {
-        if (!empty($dogrulama_kodu)) {
-            $delete = $this->sinavlar_model->delete(array('dogrulama_kodu' => $dogrulama_kodu));
+        if (!empty($sinav_id)) {
+            $delete = $this->sinavlar_model->delete(array('id' => $sinav_id));
             _alert_message($delete, site_url("sinavlar/index"), "Sınavınız başarıyla silindi!");
         }
     }
