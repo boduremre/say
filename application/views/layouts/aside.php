@@ -75,7 +75,6 @@
             <!--                    <li><a class="nav-link" href="tabs.html">Tab</a></li>-->
             <!--                </ul>-->
             <!--            </li>-->
-            <li class="menu-header">Yönetici</li>
             <!--            <li class="dropdown">-->
             <!--                <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="layout"></i><span>Forms</span></a>-->
             <!--                <ul class="dropdown-menu">-->
@@ -109,6 +108,7 @@
             <!--                </ul>-->
             <!--            </li>-->
             <?php if ($this->ion_auth->is_admin()) { ?>
+                <li class="menu-header">Yönetici</li>
                 <li class="dropdown <?php echo $this->router->fetch_class() == 'auth' ? 'active' : ''; ?>">
                     <a href="#" class="menu-toggle nav-link has-dropdown "><i data-feather="users"></i><span>Kullanıcılar</span></a>
                     <ul class="dropdown-menu">
