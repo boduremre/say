@@ -17,7 +17,7 @@ class Welcome extends CI_Controller
         $this->load->model('sinavlar_model', "sinavlar_model");
 
         //set variables
-        $this->layout->title = "Giriş";
+        $this->layout->title = "Yönetim Paneli";
     }
 
     /**
