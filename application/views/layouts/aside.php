@@ -122,8 +122,8 @@
             <?php } ?>
             <hr>
             <li>
-                <a class="nav-link text-danger" href="<?php echo site_url('auth/logout'); ?>">
-                    <i data-feather="file"></i><span>Güvenli Çıkış</span>
+                <a class="nav-link text-danger logout-btn" href="javascript:void(0)" data-url="<?php echo site_url('auth/logout'); ?>">
+                    <i data-feather="log-out"></i><span>Güvenli Çıkış</span>
                 </a>
             </li>
         </ul>
