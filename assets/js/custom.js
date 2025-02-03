@@ -59,21 +59,17 @@ $(document).ready(function () {
         });
     });
 
-    $("body").on('click', '.btn-copy', async function () { // async ekledik
-        // copyable-content içeriğini al
-        let content = document.getElementById('copyable-content').innerHTML;
+    // Clipboard.js ile div içeriğini kopyalama
+    let clipboard = new ClipboardJS('.btn-copy');
 
-        try {
-            // HTML içeriğini Clipboard'a kopyala
-            const blob = new Blob([content], { type: "text/html" });
-            const clipboardItem = new ClipboardItem({ "text/html": blob });
+    // Başarı mesajı göster
+    clipboard.on('success', function (e) {
+        swal("Bilgi", "İçerik başarıyla kopyalandı! Word’e yapıştırabilirsiniz.", "success");
+        e.clearSelection(); // Seçimi temizle
+    });
 
-            await navigator.clipboard.write([clipboardItem]); // async-await düzgün çalışır
-
-            alert("İçerik başarıyla kopyalandı! Word'e yapıştırabilirsiniz.");
-        } catch (err) {
-            console.error("Kopyalama başarısız:", err);
-            alert("Kopyalama işlemi desteklenmiyor veya başarısız oldu!");
-        }
+    // Hata yakalama
+    clipboard.on('error', function (e) {
+        swal("Hata", "Kopyalama başarısız! Tarayıcı izinlerini kontrol edin!", "error");
     });
 });
