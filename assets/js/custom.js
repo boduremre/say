@@ -23,18 +23,30 @@ $(document).ready(function () {
     // kullanıcı silme işlemini onayladıktan sonra
     // ilgili öge silinir.
     $("body").on('click', '.remove-btn', function () {
-        var $data_url = $(this).data("url");
-        Swal.fire({
+        let $data_url = $(this).data("url");
+        swal({
             title: 'Emin misiniz?',
             text: 'Bir ögeyi silmek üzeresiniz. Bu işlem geri alınamaz!',
             icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Evet, sil!',
-            cancelButtonText: 'İptal'
+            dangerMode: true,
+            buttons: {
+                cancel: {
+                    text: "İptal", // Cancel butonunun yazısı değiştirildi
+                    value: null,
+                    visible: true,
+                    className: "btn-success",
+                    closeModal: true,
+                },
+                confirm: {
+                    text: "Evet, Sil!", // Confirm butonu da özelleştirilebilir
+                    value: true,
+                    visible: true,
+                    className: "btn-danger",
+                    closeModal: true,
+                }
+            }
         }).then((result) => {
-            if (result.isConfirmed) {
+            if (result) {
                 window.location.href = $data_url;
             }
         });
@@ -42,18 +54,29 @@ $(document).ready(function () {
 
     $("body").on('click', '.logout-btn', function () {
         let data_url = $(this).data("url");
-        Swal.fire({
+        swal({
             title: 'Çıkış',
             text: 'Çıkış yapmak istiyor musunuz?',
             icon: 'warning',
-            allowOutsideClick: false,
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Evet',
-            cancelButtonText: 'Hayır'
+            dangerMode: true,
+            buttons: {
+                cancel: {
+                    text: "İptal", // Cancel butonunun yazısı değiştirildi
+                    value: null,
+                    visible: true,
+                    className: "btn-success",
+                    closeModal: true,
+                },
+                confirm: {
+                    text: "Evet, Çıkış Yap!", // Confirm butonu da özelleştirilebilir
+                    value: true,
+                    visible: true,
+                    className: "btn-danger",
+                    closeModal: true,
+                }
+            }
         }).then((result) => {
-            if (result.isConfirmed) {
+            if (result) {
                 window.location.href = data_url;
             }
         });
