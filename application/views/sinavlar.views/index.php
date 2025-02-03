@@ -13,7 +13,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover datatable" data-order-column="0" data-order-direction="desc">
+                    <table class="table table-hover datatable" data-order-column="0" data-order-direction="asc">
                         <thead>
                             <tr>
                                 <th>ID</th>
