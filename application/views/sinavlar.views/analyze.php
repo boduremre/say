@@ -9,9 +9,11 @@
                     <a href="<?php echo site_url('sinavlar/index'); ?>" class="btn btn-sm btn-primary">
                         Sınavları Listele
                     </a>
-                    <a href="<?php echo site_url('sinavlar/do/analyze/').$sinav->id; ?>" class="btn btn-sm btn-success">
-                        Analizi Başlat
-                    </a>
+                    <?php if ($sinav->yayin_durumu == 2): ?>
+                        <a href="<?php echo site_url('sinavlar/do/analyze/') . $sinav->id; ?>" class="btn btn-sm btn-success">
+                            Analizi Başlat
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="card-body">
