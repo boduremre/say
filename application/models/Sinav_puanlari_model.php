@@ -338,6 +338,18 @@ class Sinav_puanlari_model extends CI_Model
         return $query->result_array();
     }
 
+    public function get_genel_mudurluk_ortalama(array $where = array(), string $order_by = "ORDER BY sp.puan ASC"): mixed
+    {
+        $query = $this->db->query(
+            "SELECT AVG(sp.puan) AS genel_mudurluk_ortalama, o.GENEL_MUDURLUK as genel_mudurluk_adi, MIN(sp.puan) as min_puan, MAX(sp.puan) as max_puan, COUNT(sp.puan) AS ogr_sayisi" . "
+                    FROM sinav_puanlari sp
+                    JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
+                    WHERE sp.status = 1 AND sp.sinav_id = ? 
+                    GROUP BY o.GENEL_MUDURLUK " . $order_by, $where);
+
+        return $query->result_array();
+    }
+
     /**
      * Verilen veri kümesi için çarpıklık hesaplama fonksiyonu
      * @param int $sinav_id
