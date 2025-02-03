@@ -26,11 +26,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach (
-                                $sinavlar
-
-                                as $sinav
-                            ) { ?>
+                            <?php foreach ( $sinavlar as $sinav) : ?>
                                 <tr>
                                     <td><?php echo $sinav->id; ?></td>
                                     <td class="text-nowrap">
@@ -58,7 +54,7 @@
                                             <a href="<?php echo site_url('sinavlar/analyze/') . $sinav->id; ?>" data-toggle="tooltip" title="Analiz İşlemi" class="btn btn-dark btn-xs">
                                                 <i class="fa fa-share"></i>
                                             </a>
-                                            <a href="<?php echo site_url('sinavlar/delete/') . $sinav->id; ?>" class="btn btn-danger btn-xs" data-toggle="tooltip"
+                                            <a href="javascript:void(0)" data-url="<?php echo site_url('sinavlar/delete/') . $sinav->id; ?>" class="btn btn-danger btn-xs remove-btn" data-toggle="tooltip"
                                                 title="Sil (Analiz Yapılmayan Sınav Silinebilir)">
                                                 <i class="fa fa-trash"></i>
                                             </a>
@@ -74,7 +70,7 @@
                                         <?php } ?>
                                     </td>
                                 </tr>
-                            <?php } ?>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
