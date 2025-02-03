@@ -113,10 +113,6 @@
                     <a href="#" class="menu-toggle nav-link has-dropdown "><i data-feather="users"></i><span>Kullanıcılar</span></a>
                     <ul class="dropdown-menu">
                         <li><a class="nav-link" href="<?php echo site_url('auth/index'); ?>">Kullanıcılar</a></li>
-                        <li><a class="nav-link" href="<?php echo site_url('auth/index'); ?>">Material Design</a></li>
-                        <li><a class="nav-link" href="<?php echo site_url('auth/index'); ?>">Ion Icons</a></li>
-                        <li><a class="nav-link" href="<?php echo site_url('auth/index'); ?>">Feather Icons</a></li>
-                        <li><a class="nav-link" href="<?php echo site_url('auth/index'); ?>">Weather Icon</a></li>
                     </ul>
                 </li>
             <?php } ?>
