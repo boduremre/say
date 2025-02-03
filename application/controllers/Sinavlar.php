@@ -202,15 +202,15 @@ class Sinavlar extends CI_Controller
             "DİKKAT" => "Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.",
             "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "ilce_adi asc, KURUM_ADI asc"),
             "puan_kurumlar_sirali" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "avg_puan desc"),
-            "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id)),
+            "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY ilce_adi asc"),
             "puan_ilceler_sirali" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY sp.puan DESC"),
             "ogr_say_ilceler" => $this->sinav_puanlari_model->get_ilce_ogr_say(array("sinav_id" => $sinav_id)),
         );
 
         //download_json("istatistikler.json", $istatistikler);
 
-         // Sınav durumunu "dosya yüklendi" olarak güncelle
-         $update = $this->sinavlar_model->update(
+        // Sınav durumunu "dosya yüklendi" olarak güncelle
+        $update = $this->sinavlar_model->update(
             array("sinavlar.id" => $sinav_id),
             array("sinavlar.yayin_durumu" => 1)
         );
