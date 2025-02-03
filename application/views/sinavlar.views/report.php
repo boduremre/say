@@ -6,11 +6,20 @@
                 <h4>Sınav Analiz Raporu</h4>
                 <div class="card-header-action">
                     <a href="<?php echo site_url('sinavlar/index'); ?>" class="btn btn-sm btn-primary">
-                        Sınavları Listele
+                        <i class="fa fa-list"></i> Sınavları Listele
                     </a>
-                    <a href="javascript:void(0)" class="btn btn-sm btn-success btn-copy">
-                        <i class="fa fa-clipboard"></i> Kopyala
-                    </a>
+                    <?php if ($istatistikler["sinav_bilgisi"]->yayin_durumu == 1): ?>
+                        <button type="button" class="btn btn-sm btn-success btn-copy" data-clipboard-target="#copyable-content">
+                            <i class="fa fa-clipboard"></i> Kopyala
+                        </button>
+                        <button type="submit" class="btn btn-sm btn-danger" form="truncate-form">
+                            <i class="fa fa-trash"></i> Analizi Sıfırla
+                        </button>
+                        <?php echo form_open(site_url('sinavlar/truncate/analyze/'), array("id" => "truncate-form")); ?>
+                        <input type="hidden" name="sinav_id" value="<?php echo $istatistikler['sinav_bilgisi']->id; ?>">
+
+                        <?php echo form_close(); ?>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="card-body" id="copyable-content">
@@ -28,6 +37,8 @@
                 <h5 class="text-center">Okul Bazında Sınav Bilgileri</h5>
                 <?php $this->load->view("sinavlar.views/_partials/okul_puan_ort"); ?>
                 <?php $this->load->view("sinavlar.views/_partials/okul_puan_ort_sirali"); ?>
+                <h5 class="text-center">Genel Müdürlük Bazında Sınav Bilgileri</h5>
+                <?php $this->load->view("sinavlar.views/_partials/genel_mudurluk_puan_ort"); ?>
             </div>
         </div>
     </div>
