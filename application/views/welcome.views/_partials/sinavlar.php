@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table table-hover datatable" data-order-column="0" data-order-direction="desc">
+    <table class="table table-hover datatable" data-order-column="0" data-order-direction="asc">
         <thead>
             <tr>
                 <th>ID</th>
@@ -37,7 +37,7 @@
                             <i class="fa fa-edit"></i>
                         </a>
                         <?php if ($sinav->yayin_durumu == 0) { ?>
-                            <a href="<?php echo site_url('sinavlar/analyze/') . $sinav->dogrulama_kodu; ?>" data-toggle="tooltip" title="Analiz İşlemi"
+                            <a href="<?php echo site_url('sinavlar/analyze/') . $sinav->id; ?>" data-toggle="tooltip" title="Analiz İşlemi"
                                 class="btn btn-dark btn-xs">
                                 <i class="fa fa-share"></i>
                             </a>
