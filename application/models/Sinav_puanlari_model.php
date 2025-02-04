@@ -42,6 +42,20 @@ class Sinav_puanlari_model extends CI_Model
     }
 
     /**
+     * @param array $where
+     * @return mixed
+     */
+    public function get_all(array $where = array()): mixed
+    {
+        // Veritabanından sınavın puanlarını al
+        $this->db->select("puan");
+        $this->db->from($this->table_name);
+        $this->db->where($where);
+
+        return $this->db->get()->result_array();
+    }
+
+    /**
      * @param array $data
      * @return bool|int
      */
@@ -208,17 +222,6 @@ class Sinav_puanlari_model extends CI_Model
         return $sum / ($count - 1); // Örneklem varyansı
     }
 
-    public function determine_exam_difficulty_based_on_variance($variance): string
-    {
-        if ($variance < 5) {
-            return "SINAV KOLAY/ORTA"; // Kolay ya da orta seviyede bir sınav
-        } elseif ($variance >= 5 && $variance <= 10) {
-            return "SINAV ORTA ZOR"; // Orta zorlukta bir sınav
-        } else {
-            return "SINAV ÇOK ZOR"; // Zor bir sınav
-        }
-    }
-
     /**
      * @param int $sinav_id
      * @return mixed
@@ -292,19 +295,18 @@ class Sinav_puanlari_model extends CI_Model
      */
     public function get_ranj(int $sinav_id): int
     {
-        // En yüksek ve en düşük puanı al
         $this->db->select_max('puan', 'max_puan');
         $this->db->select_min('puan', 'min_puan');
         $this->db->where('sinav_id', $sinav_id);
-        $this->db->where('status !=', 0); // Geçersiz notları dahil etme
-        $query = $this->db->get('sinav_puanlari')->row_array();
+        $this->db->where('status !=', 0);
+        $query = $this->db->get('sinav_puanlari')->row();
 
-        if (!$query || empty($query['max_puan']) || empty($query['min_puan'])) {
-            return 0; // Veri yoksa 0 döndür
+        if (!$query || is_null($query->max_puan) || is_null($query->min_puan)) {
+            return 0;
         }
 
-        // Ranj = Maksimum Puan - Minimum Puan
-        return (int)$query['max_puan'] - (int)$query['min_puan'];
+        // String olan değerleri integer'a çevirerek işlem yap
+        return (int)$query->max_puan - (int)$query->min_puan;
     }
 
     /**
@@ -351,300 +353,6 @@ class Sinav_puanlari_model extends CI_Model
     }
 
     /**
-     * Verilen veri kümesi için çarpıklık hesaplama fonksiyonu
-     * @param int $sinav_id
-     * @return float|object|int
-     */
-    public function calculate_skewness(int $sinav_id): float|object|int
-    {
-        // Veritabanından sınavın puanlarını al
-        $this->db->select("puan");
-        $this->db->from($this->table_name);
-        $this->db->where(array(
-            "sinav_id" => $sinav_id,
-            "status !=" => 0
-        ));
-
-        $data = $this->db->get()->result_array(); // Puanları alıyoruz
-
-        // Eğer veri yoksa çarpıklık hesaplaması yapamayız
-        if (empty($data)) {
-            return 0;
-        }
-
-        $n = count($data); // Veri sayısını alıyoruz
-
-        if ($n < 3) {
-            return 0; // Çarpıklık için yeterli veri yok
-        }
-
-        // Verileri 'puan' anahtarına göre ayıklıyoruz
-        $puanlar = array_column($data, 'puan');
-
-        // Ortalama ve standart sapmayı hesapla
-        $mean = array_sum($puanlar) / $n;
-        $variance = 0;
-        foreach ($puanlar as $value) {
-            $variance += pow($value - $mean, 2);
-        }
-        $std_dev = sqrt($variance / $n);
-
-        // Çarpıklık hesaplama
-        $skewness = 0;
-        foreach ($puanlar as $value) {
-            $skewness += pow(($value - $mean) / $std_dev, 3);
-        }
-
-        // Çarpıklık değeri
-        $skewness *= $n / (($n - 1) * ($n - 2));
-
-        return $skewness;
-    }
-
-
-    // Çarpıklık değerine göre yorum yapacak fonksiyon
-    public function interpret_skewness($skewness): string
-    {
-        if ($skewness > 1) {
-            return 'Dağılım sağa çarpık (long tail right)';
-        } elseif ($skewness < -1) {
-            return 'Dağılım sola çarpık (long tail left)';
-        } elseif ($skewness >= -1 && $skewness <= 1) {
-            return 'Dağılım simetrik';
-        } else {
-            return 'Çarpıklık değeri hesaplanamadı';
-        }
-    }
-
-    /**
-     * Çarpıklık değerine göre sınavın zorluk derecesini belirleme fonksiyonu
-     * @param $skewness
-     * @return string
-     */
-    public function determine_exam_difficulty($skewness): string
-    {
-        // Eğer çarpıklık değeri boş veya 0'dan küçükse boş döndür
-        if ($skewness === "") {
-            return "";
-        }
-
-        // Çarpıklık değerine göre zorluk derecesi belirleme
-        if ($skewness <= 0) {
-            return "Sınav Çok Kolay";
-        } elseif ($skewness < 0.1) {
-            return "Sınav Kolay ";
-        } elseif ($skewness <= 0.25) {
-            return "Sınav Zor";
-        } else {
-            return "Sınav Çok Zor";
-        }
-    }
-
-    public function determine_exam_difficultyy($variance, $skewness): string
-    {
-        // Varyansa dayalı zorluk derecesi
-        if ($variance > 200) {
-            $difficulty = "Sınav Çok Zor";
-        } elseif ($variance > 100) {
-            $difficulty = "Sınav Orta Zor";
-        } else {
-            $difficulty = "Sınav Kolay";
-        }
-
-        // Çarpıklıkla zorluk yorumunu entegre et
-        if ($skewness > 0.5) {
-            $difficulty = "Sınav Kolay"; // Sağ çarpık = kolay
-        } elseif ($skewness < -0.5) {
-            $difficulty = "Sınav Zor"; // Sol çarpık = zor
-        }
-
-        return $difficulty;
-    }
-
-    /**
-     * Pearson Korelasyonu hesaplamak için örnek PHP fonksiyonu
-     * @param $scores1
-     * @param $scores2
-     * @return float|int|string
-     */
-    // Pearson Korelasyonunu hesaplama fonksiyonu
-    public function pearson_correlation($scores1, $scores2): float|int|string
-    {
-        $n = count($scores1);
-
-        // Eğer veri setleri farklı uzunlukta ise, hata döndür
-        if ($n != count($scores2)) {
-            return 'Veri setleri farklı uzunlukta!';
-        }
-
-        // Toplamları ve karelerini hesapla
-        $sum_x = array_sum($scores1);
-        $sum_y = array_sum($scores2);
-
-        $sum_x_squared = array_sum(array_map(function ($x) {
-            return $x * $x;
-        }, $scores1));
-        $sum_y_squared = array_sum(array_map(function ($y) {
-            return $y * $y;
-        }, $scores2));
-
-        // Çarpımları topla
-        $sum_xy = array_sum(array_map(function ($x, $y) {
-            return $x * $y;
-        }, $scores1, $scores2));
-
-        // Pearson korelasyonunu hesapla
-        $numerator = $sum_xy - (($sum_x * $sum_y) / $n);
-        $denominator = sqrt(($sum_x_squared - ($sum_x * $sum_x) / $n) * ($sum_y_squared - ($sum_y * $sum_y) / $n));
-
-        // Eğer payda sıfırsa, korelasyon sıfırdır
-        if ($denominator == 0) {
-            return 0;
-        }
-
-        return $numerator / $denominator;
-    }
-
-    // Korelasyon yorumlama fonksiyonu
-    public function interpret_correlation($correlation): string
-    {
-        if ($correlation >= 0.9) {
-            return "Çok yüksek bir ilişki var.";
-        } elseif ($correlation >= 0.7) {
-            return "Yüksek bir ilişki var.";
-        } elseif ($correlation >= 0.5) {
-            return "Orta seviyede bir ilişki var.";
-        } elseif ($correlation >= 0.3) {
-            return "Düşük bir ilişki var.";
-        } else {
-            return "Çok düşük bir ilişki var.";
-        }
-    }
-
-    // Kimya ve Coğrafya sınavları arasındaki korelasyonu hesaplayıp yorum yapma
-    public function get_correlation_and_interpretation($lesson1_scores, $lesson2_scores): array
-    {
-        $correlation = $this->pearson_correlation($lesson1_scores, $lesson2_scores);
-
-        // Korelasyon değerini yorumla
-        $interpretation = $this->interpret_correlation($correlation);
-
-        return [
-            'correlation' => $correlation,
-            'interpretation' => $interpretation
-        ];
-    }
-
-    // Veritabanından puanları çekme ve çarpıklık grafiği oluşturma
-    public function plot_skewness_graph($sinav_id): string
-    {
-        // Veritabanından puanları çek
-        $this->db->select("puan");
-        $this->db->from($this->table_name);
-        $this->db->where(array("sinav_id" => $sinav_id, "status !=" => 0));
-
-        $data = $this->db->get()->result_array();
-
-        // Eğer puan verisi yoksa, işlem yapma
-        if (empty($data)) {
-            return "Veri yok.";
-        }
-
-        // Puanları diziye aktar
-        $scores = array_map(function ($row) {
-            return $row['puan'];
-        }, $data);
-
-        // Histogram için ayarları yap
-        $width = 600;
-        $height = 400;
-        $padding = 50; // Kenar boşlukları
-
-        // GD kütüphanesiyle bir resim oluştur
-        $image = imagecreatetruecolor($width, $height);
-
-        // Renkleri tanımla
-        $background_color = imagecolorallocate($image, 255, 255, 255);
-        $bar_color = imagecolorallocate($image, 0, 102, 204);
-        $text_color = imagecolorallocate($image, 0, 0, 0);
-        $label_color = imagecolorallocate($image, 255, 0, 0); // Öğrenci sayısı yazısı için kırmızı renk
-
-        // Arka planı beyaz yap
-        imagefill($image, 0, 0, $background_color);
-
-        // Puan aralığını ve bin sayısını ayarla
-        $num_bins = 10;
-        $min_value = min($scores);
-        $max_value = max($scores);
-        $range = $max_value - $min_value;
-        $bin_width = $range / $num_bins;
-
-        // Bin sıklıklarını hesapla
-        $frequencies = array_fill(0, $num_bins, 0);
-        foreach ($scores as $score) {
-            $bin = (int)(($score - $min_value) / $bin_width);
-            if ($bin == $num_bins) {
-                $bin--; // Son bin için istisna
-            }
-            $frequencies[$bin]++;
-        }
-
-        // Maksimum frekans
-        $max_frequency = max($frequencies);
-
-        // Histogram çubuklarını çiz
-        $bar_width = ($width - 2 * $padding) / $num_bins;
-        for ($i = 0; $i < $num_bins; $i++) {
-            $bar_height = ($frequencies[$i] / $max_frequency) * ($height - 2 * $padding);
-            $x1 = $padding + $i * $bar_width;
-            $y1 = $height - $padding;
-            $x2 = $x1 + $bar_width - 2;
-            $y2 = $height - $padding - $bar_height;
-
-            // Çubukları çiz
-            imagefilledrectangle($image, $x1, $y1, $x2, $y2, $bar_color);
-
-            // X ekseni etiketlerini ekle (puan aralıkları)
-            $bin_label = round($min_value + ($i * $bin_width)) . "-" . round($min_value + (($i + 1) * $bin_width));
-            imagestring($image, 3, $x1, $height - 40, $bin_label, $text_color);
-
-            // Çubukların üstüne öğrenci sayısını yazdır
-            $student_count = $frequencies[$i];
-            imagestring($image, 4, $x1 + ($bar_width / 4), $y2 - 15, $student_count, $label_color);
-        }
-
-        // Y ekseni etiketlerini ekle (frekans değerleri)
-        for ($i = 0; $i <= $max_frequency; $i += ceil($max_frequency / 5)) {
-            $y_pos = $height - $padding - ($i / $max_frequency) * ($height - 2 * $padding);
-            imagestring($image, 3, 10, $y_pos, $i, $text_color);
-        }
-
-        // Ekseni çiz (X ve Y)
-        imageline($image, $padding, $padding, $padding, $height - $padding, $text_color); // Y Ekseni
-        imageline($image, $padding, $height - $padding, $width - $padding, $height - $padding, $text_color); // X Ekseni
-
-        // Başlık ekle
-        imagestring($image, 5, $width / 2 - 70, 10, "", $text_color);
-
-        // Resmi kaydedeceğimiz dizin (public/uploads klasörü)
-        $upload_path = FCPATH . 'uploads/graphs/';
-        if (!file_exists($upload_path)) {
-            mkdir($upload_path, 0777, true); // Klasör yoksa oluştur
-        }
-
-        // Resim adını oluştur
-        $image_filename = 'skewness_' . $sinav_id . '.png';
-        $image_path = $upload_path . $image_filename;
-
-        // PNG olarak kaydet
-        imagepng($image, $image_path);
-        imagedestroy($image);
-
-        // Resmin URL'sini döndür
-        return base_url('uploads/graphs/' . $image_filename);
-    }
-
-    /**
      * @param array $where
      * @return array
      */
@@ -656,6 +364,28 @@ class Sinav_puanlari_model extends CI_Model
             WHEN puan BETWEEN 60 AND 69 THEN '60 - 69 ARASI'
             WHEN puan BETWEEN 70 AND 84 THEN '70 - 84 ARASI'
             WHEN puan BETWEEN 85 AND 100 THEN '85 - 100 ARASI'
+            ELSE 'Diğer' END AS puan_araligi, COUNT(*) as ogrenci_sayisi");
+        $this->db->from($this->table_name);
+        $this->db->where($where);
+        $this->db->group_by("puan_araligi");
+        $this->db->order_by("puan_araligi", "desc");
+
+        return $this->db->get()->result_array();
+    }
+
+    public function get_puan_dagilimi_yeni(array $where = array()): array
+    {
+        $this->db->select("CASE 
+            WHEN puan BETWEEN 0 AND 10 THEN '0 - 10 ARASI'
+            WHEN puan BETWEEN 11 AND 20 THEN '11 - 20 ARASI'
+            WHEN puan BETWEEN 21 AND 30 THEN '21 - 30 ARASI'
+            WHEN puan BETWEEN 31 AND 40 THEN '31 - 40 ARASI'
+            WHEN puan BETWEEN 41 AND 50 THEN '41 - 50 ARASI'
+            WHEN puan BETWEEN 51 AND 60 THEN '51 - 60 ARASI'
+            WHEN puan BETWEEN 61 AND 70 THEN '61 - 70 ARASI'
+            WHEN puan BETWEEN 71 AND 80 THEN '71 - 80 ARASI'
+            WHEN puan BETWEEN 81 AND 90 THEN '81 - 90 ARASI'
+            WHEN puan BETWEEN 91 AND 100 THEN '91 - 100 ARASI'
             ELSE 'Diğer' END AS puan_araligi, COUNT(*) as ogrenci_sayisi");
         $this->db->from($this->table_name);
         $this->db->where($where);
