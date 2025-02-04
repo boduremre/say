@@ -2,10 +2,10 @@
 
 if (!function_exists('alert_message')) {
     /**
-     * @param $text
-     * @param $title1
-     * @param $redirect_uri
+     * @param string $text
      * @param string $type
+     * @param string $title
+     * @param string $redirect_uri
      * @return void
      */
     function alert_message(string $text, string $type = "", string $title = "", string $redirect_uri = ""): void
