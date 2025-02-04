@@ -12,12 +12,14 @@
                         <button type="button" class="btn btn-sm btn-success btn-copy" data-clipboard-target="#copyable-content">
                             <i class="fa fa-clipboard"></i> Kopyala
                         </button>
+                        <a href="<?php echo site_url('sinavlar/download_json/'). $istatistikler['sinav_bilgisi']->id; ; ?>" class="btn btn-sm btn-info">
+                            <i class="fa fa-download"></i> Verileri İndir
+                        </a>
                         <button type="submit" class="btn btn-sm btn-danger" form="truncate-form">
                             <i class="fa fa-trash"></i> Analizi Sıfırla
                         </button>
                         <?php echo form_open(site_url('sinavlar/truncate/analyze/'), array("id" => "truncate-form")); ?>
-                        <input type="hidden" name="sinav_id" value="<?php echo $istatistikler['sinav_bilgisi']->id; ?>">
-
+                            <input type="hidden" name="sinav_id" value="<?php echo $istatistikler['sinav_bilgisi']->id; ?>">
                         <?php echo form_close(); ?>
                     <?php endif; ?>
                 </div>
