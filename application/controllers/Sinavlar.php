@@ -243,6 +243,10 @@ class Sinavlar extends CI_Controller
         );
     }
 
+    /**
+     * @return void
+     * @throws PHPExcel_Reader_Exception
+     */
     public function excel_upload(): void
     {
         // Gelen istek post isteği mi kontrol et
