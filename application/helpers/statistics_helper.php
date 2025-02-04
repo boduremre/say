@@ -42,6 +42,7 @@ if (!function_exists('calculate_skewness')) {
         return $skewness;
     }
 }
+
 if (!function_exists('interpret_skewness')) {
     // Çarpıklık değerine göre yorum yapacak fonksiyon
     function interpret_skewness($skewness): string
@@ -120,78 +121,82 @@ if (!function_exists('determine_exam_difficulty_based_on_variance')) {
     }
 }
 
-/**
- * Pearson Korelasyonu hesaplamak için örnek PHP fonksiyonu
- * @param $scores1
- * @param $scores2
- * @return float|int|string
- */
-// Pearson Korelasyonunu hesaplama fonksiyonu
-function pearson_correlation($scores1, $scores2): float|int|string
-{
-    $n = count($scores1);
+if (!function_exists('pearson_correlation')) {
+    /**
+     * Pearson Korelasyonu hesaplamak için örnek PHP fonksiyonu
+     * @param $scores1
+     * @param $scores2
+     * @return float|int|string
+     */
+    function pearson_correlation($scores1, $scores2): float|int|string
+    {
+        $n = count($scores1);
 
-    // Eğer veri setleri farklı uzunlukta ise, hata döndür
-    if ($n != count($scores2)) {
-        return 'Veri setleri farklı uzunlukta!';
-    }
+        // Eğer veri setleri farklı uzunlukta ise, hata döndür
+        if ($n != count($scores2)) {
+            return 'Veri setleri farklı uzunlukta!';
+        }
 
-    // Toplamları ve karelerini hesapla
-    $sum_x = array_sum($scores1);
-    $sum_y = array_sum($scores2);
+        // Toplamları ve karelerini hesapla
+        $sum_x = array_sum($scores1);
+        $sum_y = array_sum($scores2);
 
-    $sum_x_squared = array_sum(array_map(function ($x) {
-        return $x * $x;
-    }, $scores1));
-    $sum_y_squared = array_sum(array_map(function ($y) {
-        return $y * $y;
-    }, $scores2));
+        $sum_x_squared = array_sum(array_map(function ($x) {
+            return $x * $x;
+        }, $scores1));
+        $sum_y_squared = array_sum(array_map(function ($y) {
+            return $y * $y;
+        }, $scores2));
 
-    // Çarpımları topla
-    $sum_xy = array_sum(array_map(function ($x, $y) {
-        return $x * $y;
-    }, $scores1, $scores2));
+        // Çarpımları topla
+        $sum_xy = array_sum(array_map(function ($x, $y) {
+            return $x * $y;
+        }, $scores1, $scores2));
 
-    // Pearson korelasyonunu hesapla
-    $numerator = $sum_xy - (($sum_x * $sum_y) / $n);
-    $denominator = sqrt(($sum_x_squared - ($sum_x * $sum_x) / $n) * ($sum_y_squared - ($sum_y * $sum_y) / $n));
+        // Pearson korelasyonunu hesapla
+        $numerator = $sum_xy - (($sum_x * $sum_y) / $n);
+        $denominator = sqrt(($sum_x_squared - ($sum_x * $sum_x) / $n) * ($sum_y_squared - ($sum_y * $sum_y) / $n));
 
-    // Eğer payda sıfırsa, korelasyon sıfırdır
-    if ($denominator == 0) {
-        return 0;
-    }
+        // Eğer payda sıfırsa, korelasyon sıfırdır
+        if ($denominator == 0) {
+            return 0;
+        }
 
-    return $numerator / $denominator;
-}
-
-// Korelasyon yorumlama fonksiyonu
-function interpret_correlation($correlation): string
-{
-    if ($correlation >= 0.9) {
-        return "Çok yüksek bir ilişki var.";
-    } elseif ($correlation >= 0.7) {
-        return "Yüksek bir ilişki var.";
-    } elseif ($correlation >= 0.5) {
-        return "Orta seviyede bir ilişki var.";
-    } elseif ($correlation >= 0.3) {
-        return "Düşük bir ilişki var.";
-    } else {
-        return "Çok düşük bir ilişki var.";
+        return $numerator / $denominator;
     }
 }
 
-// Kimya ve Coğrafya sınavları arasındaki korelasyonu hesaplayıp yorum yapma
-function get_correlation_and_interpretation($lesson1_scores, $lesson2_scores): array
-{
-    $correlation = pearson_correlation($lesson1_scores, $lesson2_scores);
+if (!function_exists('interpret_correlation')) {
+    function interpret_correlation($correlation): string
+    {
+        if ($correlation >= 0.9) {
+            return "Çok yüksek bir ilişki var.";
+        } elseif ($correlation >= 0.7) {
+            return "Yüksek bir ilişki var.";
+        } elseif ($correlation >= 0.5) {
+            return "Orta seviyede bir ilişki var.";
+        } elseif ($correlation >= 0.3) {
+            return "Düşük bir ilişki var.";
+        } else {
+            return "Çok düşük bir ilişki var.";
+        }
+    }
+}
 
-    // Korelasyon değerini yorumla
-    $interpretation = interpret_correlation($correlation);
+if (!function_exists('get_correlation_and_interpretation')) {
+    // Kimya ve Coğrafya sınavları arasındaki korelasyonu hesaplayıp yorum yapma
+    function get_correlation_and_interpretation($lesson1_scores, $lesson2_scores): array
+    {
+        $correlation = pearson_correlation($lesson1_scores, $lesson2_scores);
 
-    return [
-        'correlation' => $correlation,
-        'interpretation' => $interpretation
-    ];
+        // Korelasyon değerini yorumla
+        $interpretation = interpret_correlation($correlation);
+
+        return [
+            'correlation' => $correlation,
+            'interpretation' => $interpretation
+        ];
+    }
 }
 
 if (!function_exists('draw_bar_chart')) {
