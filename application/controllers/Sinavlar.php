@@ -141,7 +141,7 @@ class Sinavlar extends CI_Controller
         $sinav_id = $this->input->post("sinav_id", TRUE);
 
         $delete = $this->sinav_puanlari_model->delete(array('sinav_id' => $sinav_id));
-        if($delete){
+        if ($delete) {
             $form_values = array(
                 "yayin_durumu" => 0,
             );
@@ -225,7 +225,7 @@ class Sinavlar extends CI_Controller
             "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "ilce_adi asc, KURUM_ADI asc"),
             "puan_kurumlar_sirali" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "avg_puan desc"),
             "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY ilce_adi asc"),
-            "puan_ilceler_sirali" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY sp.puan DESC"),
+            "puan_ilceler_sirali" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY ilce_ortalama DESC"),
             "ogr_say_ilceler" => $this->sinav_puanlari_model->get_ilce_ogr_say(array("sinav_id" => $sinav_id)),
             "genel_mudurluk_ortalama" => $this->sinav_puanlari_model->get_genel_mudurluk_ortalama(array("sinav_id" => $sinav_id)),
         );
@@ -238,7 +238,7 @@ class Sinavlar extends CI_Controller
             array("sinavlar.yayin_durumu" => 1)
         );
 
-        if($update){
+        if ($update) {
             $this->layout->set_view("report");
             $this->layout->render();
         }
