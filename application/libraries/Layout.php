@@ -6,6 +6,7 @@ class Layout
     public array $data = array();
     public string|null $view = null;
     public string|null $title = null;
+    public string|null $active_link = null;
     public string|null $view_folder = null;
     public string $layouts_folder = 'layouts';
     public string $layout = 'default';
@@ -57,7 +58,8 @@ class Layout
         $loaded_data = array(
             "view" => $view_folder . '/' . $view,
             "data" => $this->data,
-            "title" => $this->title
+            "title" => $this->title,
+            "active_link" => $this->active_link
         );
 
         $layout_path = '/' . $this->layouts_folder . '/' . $this->layout;
