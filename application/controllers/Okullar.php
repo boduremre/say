@@ -15,6 +15,7 @@ class Okullar extends CI_Controller
 
         //set variables
         $this->layout->title = "Okullar";
+        $this->layout->active_link = "okullar";
     }
 
     /**
