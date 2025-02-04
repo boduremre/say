@@ -21,13 +21,13 @@
 					</div> -->
         <ul class="sidebar-menu">
             <li class="menu-header">Menü</li>
-            <li class="<?php echo $this->router->fetch_class() == 'welcome' ? 'active' : ''; ?>">
+            <li class="<?php echo $active_link == 'dashboard' ? 'active' : ''; ?>">
                 <a class="nav-link" href="<?php echo site_url('welcome/index'); ?>">
                     <i data-feather="file"></i><span>Anasayfa</span>
                 </a>
             </li>
 
-            <li class="dropdown <?php echo $this->router->fetch_class() == 'okullar' ? 'active' : ''; ?>">
+            <li class="dropdown <?php echo $active_link == 'okullar' ? 'active' : ''; ?>">
                 <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="home"></i><span>Kurum İşlemleri</span></a>
                 <ul class="dropdown-menu">
                     <li><a class="nav-link" href="<?php echo site_url('okullar/index'); ?>">Kurum Tanımlama</a></li>
@@ -53,7 +53,7 @@
             <!--                    <li><a class="nav-link" href="email-read.html">read</a></li>-->
             <!--                </ul>-->
             <!--            </li>-->
-            <li class="dropdown <?php echo $this->router->fetch_class() == 'sinavlar' ? 'active' : ''; ?>">
+            <li class="dropdown <?php echo $active_link == 'sinavlar' ? 'active' : ''; ?>">
                 <a href="#" class="menu-toggle nav-link has-dropdown">
                     <i data-feather="copy"></i><span>Sınav İşlemleri</span>
                 </a>
@@ -109,7 +109,7 @@
             <!--            </li>-->
             <?php if ($this->ion_auth->is_admin()) { ?>
                 <li class="menu-header">Yönetici</li>
-                <li class="dropdown <?php echo $this->router->fetch_class() == 'auth' ? 'active' : ''; ?>">
+                <li class="dropdown <?php echo $active_link == 'auth' ? 'active' : ''; ?>">
                     <a href="#" class="menu-toggle nav-link has-dropdown "><i data-feather="users"></i><span>Kullanıcılar</span></a>
                     <ul class="dropdown-menu">
                         <li><a class="nav-link" href="<?php echo site_url('auth/index'); ?>">Kullanıcılar</a></li>
