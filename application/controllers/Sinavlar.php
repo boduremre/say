@@ -15,6 +15,7 @@ class Sinavlar extends CI_Controller
         $this->load->helper("guid");
 
         $this->layout->title = "Sınavlar";
+        $this->layout->active_link = "sinavlar";
     }
 
     /**
