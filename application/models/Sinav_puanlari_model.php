@@ -312,7 +312,7 @@ class Sinav_puanlari_model extends CI_Model
      * @param string $order_by
      * @return mixed
      */
-    public function get_ilce_ortalama(array $where = array(), string $order_by = "ORDER BY sp.puan ASC"): mixed
+    public function get_ilce_ortalama(array $where = array(), string $order_by = "ORDER BY ilce_ortalama ASC"): mixed
     {
         $query = $this->db->query(
             "SELECT d.DistrictID, d.DistrictName AS ilce_adi, AVG(sp.puan) AS ilce_ortalama, MIN(sp.puan) as min_puan, MAX(sp.puan) as max_puan, COUNT(sp.puan) AS ogr_sayisi" . "
