@@ -84,10 +84,19 @@ if (!function_exists('download_json')) {
     {
         $json_data = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
+        if ($json_data === false)
+            die("JSON encode hatası: " . json_last_error_msg());
+
         header('Content-Type: application/json');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($json_data));
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+        // header('Content-Length: ' . strlen($json_data)); // Bu satırı kaldır veya aşağıdaki ile değiştir
+        // header('Content-Length: ' . mb_strlen($json_data, '8bit'));
 
+        ob_clean();
+        flush();
         echo $json_data;
         exit;
     }
@@ -100,7 +109,7 @@ if (!function_exists('download_xml')) {
      * @param string $filename Dosya adı
      * @param array $data XML'e dönüştürülecek veri
      */
-    function download_xml($filename, $data)
+    function download_xml(string $filename, array $data = array()): void
     {
         $xml = new SimpleXMLElement('<sinav_verileri/>');
 
