@@ -50,6 +50,7 @@ class Auth extends CI_Controller
             }
 
             $this->layout->data = $this->data;
+            $this->layout->active_link = "auth";
             $this->layout->render();
         }
     }
