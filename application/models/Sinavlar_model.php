@@ -43,7 +43,7 @@ class Sinavlar_model extends CI_Model
         return false;
     }
 
-    public function get(array $where = array(), string $select = "sinavlar.*, dersler.ders_id, dersler.ders_adi, siniflar.sinif_adi"): mixed
+    public function get(array $where = array(), string $select = "sinavlar.*, dersler.ders_id, dersler.ders_adi, siniflar.sinif_adi, siniflar.sinif_seviyesi"): mixed
     {
         $this->db->select($select);
         $this->db->from($this->table_name);
