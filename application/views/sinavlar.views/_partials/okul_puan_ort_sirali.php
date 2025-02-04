@@ -6,6 +6,7 @@
             <th>İlçe</th>
             <th>Kurum Kodu</th>
             <th>Kurum</th>
+            <th>Şube Sayısı</th>
             <th>Öğrenci Sayısı</th>
             <th>En Düşük Puan</th>
             <th>En Yüksek Puan</th>
@@ -20,6 +21,7 @@
                 <td><?php echo $row["ilce_adi"]; ?></td>
                 <td><?php echo $row["kurum_kodu"]; ?></td>
                 <td><?php echo $row["KURUM_ADI"]; ?></td>
+                <td><?php echo $istatistikler["sube_sayilari"][$row["kurum_kodu"]] ?? 0; ?></td>
                 <td><?php echo $row["ogrenci_sayisi"]; ?></td>
                 <td><?php echo $row["min_puan"]; ?></td>
                 <td><?php echo $row["max_puan"]; ?></td>
@@ -29,6 +31,7 @@
         <tr class="bg-success fw-bold">
             <td><?php echo $i++; ?></td>
             <td colspan="3">İl Geneli</td>
+            <td><?php echo $istatistikler["toplam_sube_sayisi"]; ?></td>
             <td><?php echo $istatistikler["katilan_ogrenci_sayisi"]; ?></td>
             <td><?php echo  $istatistikler["min_puan"]; ?></td>
             <td><?php echo  $istatistikler["max_puan"]; ?></td>
