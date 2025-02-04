@@ -18,6 +18,7 @@ class Welcome extends CI_Controller
 
         //set variables
         $this->layout->title = "Yönetim Paneli";
+        $this->layout->active_link = "dashboard";
     }
 
     /**
