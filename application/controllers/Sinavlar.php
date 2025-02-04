@@ -201,16 +201,17 @@ class Sinavlar extends CI_Controller
         ini_set('display_errors', 0);
 
         $this->load->model('sinav_puanlari_model');
+        $this->load->model('sube_model');
         $this->load->helper('statistics');
 
+        $sinav_bilgisi = $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id));
         $puanlar = $this->sinav_puanlari_model->get_all(array("sinav_id" => $sinav_id, "status !=" => 0));
         $skewness = calculate_skewness($puanlar);
         $variance = $this->sinav_puanlari_model->get_variance_puan(array("sinav_id" => $sinav_id));
         $puan_dagilimi = $this->sinav_puanlari_model->get_puan_dagilimi_yeni(array("sinav_id" => $sinav_id, "status !=" => 0));
 
-
         return array(
-            "sinav_bilgisi" => $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id)),
+            "sinav_bilgisi" => $sinav_bilgisi,
             "toplam_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id)),
             "katilan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1)),
             "katilmayan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 0)),
@@ -236,6 +237,8 @@ class Sinavlar extends CI_Controller
             "DİKKAT" => "Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.",
             "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "ilce_adi asc, KURUM_ADI asc"),
             "puan_kurumlar_sirali" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "avg_puan desc"),
+            "sube_sayilari" => $this->sube_model->get_sube_sayisi(array('sinif_seviyesi' => $sinav_bilgisi->sinif_seviyesi)),
+            "toplam_sube_sayisi" => $this->sube_model->count(array('sinif_seviyesi' => $sinav_bilgisi->sinif_seviyesi)),
             "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY ilce_adi asc"),
             "puan_ilceler_sirali" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY ilce_ortalama DESC"),
             "ogr_say_ilceler" => $this->sinav_puanlari_model->get_ilce_ogr_say(array("sinav_id" => $sinav_id)),
