@@ -162,45 +162,54 @@ class Sinavlar extends CI_Controller
      */
     public function do_analyze(string $sinav_id): void
     {
+        // sınav analiz verilerini getir.
+        $istatistikler = $this->get_analyze_result($sinav_id);
+
+        // Sınav durumunu Analiz Tamamlandı olarak güncelle
+        $update = $this->sinavlar_model->update(
+            array("sinavlar.id" => $sinav_id),
+            array("sinavlar.yayin_durumu" => 1)
+        );
+
+        if ($update) {
+            $this->layout->set_view("report");
+            $this->layout->data["istatistikler"] = $istatistikler;
+            $this->layout->render();
+        }
+    }
+
+    /**
+     * @desc Kaydedilen sınavın analiz verilerini json formatında indirilmesini sağlar.
+     * @param string $sinav_id
+     * @return void
+     */
+    public function download_json(string $sinav_id): void
+    {
+        // sınav analiz verilerini getir.
+        $istatistikler = $this->get_analyze_result($sinav_id);
+
+        download_json("istatistikler.json", $istatistikler);
+    }
+
+    /**
+     * @param string $sinav_id
+     * @return array
+     */
+    private function get_analyze_result(string $sinav_id): array
+    {
         error_reporting(0);
         ini_set('display_errors', 0);
 
         $this->load->model('sinav_puanlari_model');
         $this->load->helper('statistics');
 
-        //Merkezi Eğilim Ölçütleri (Ortalama, Medyan, Mod)
-        //    Bu ölçütler, puanların genel dağılımını anlamamıza yardımcı olur.
-        //
-        //    Ortalama (Mean): Tüm puanların toplamının öğrenci sayısına bölünmesiyle elde edilir.
-        //    Medyan (Median): Puanlar küçükten büyüğe sıralandığında tam ortadaki değerdir.
-        //    Mod (Mode): En sık tekrar eden puandır.
-        //
-        //    Yorum:
-        //      Ortalama yüksekse, genel başarı seviyesi yüksektir.
-        //      Medyan, aşırı uç değerlerden etkilenmez ve genel başarı eğilimini daha iyi yansıtır.
-        //      Mod, hangi puanın en fazla alındığını gösterir.
-
-        //Yayılım Dağılım Ölçütleri
-        //    Standart sapma yüksekse, öğrenciler arasındaki başarı farkı fazladır.
-        //    Standart sapma düşükse, öğrencilerin başarı düzeyi birbirine yakındır.
-        //    Çeyrekler, başarının belirli gruplara nasıl dağıldığını gösterir.
-
-        //    3. Başarı Yüzdeleri ve Geçme-Kalma Analizi
-        //    Öğrencilerin başarı seviyelerini belirli yüzdelik dilimlere ayırarak analiz edebiliriz.
-        //
-        //    Başarı Oranı: Belirli bir eşiğin (örneğin 50 puan) üzerinde olan öğrencilerin yüzdesi.
-        //    Üst Yüzdelik Dilimler (Top %10, %25): En başarılı öğrencileri belirler.
-        //    Alt Yüzdelik Dilimler (Bottom %10, %25): En düşük başarı gösteren öğrencileri belirler.
-        //
-        //    Yorum:
-        //      Eğer üst yüzdelik dilimde çok az öğrenci varsa, başarılı öğrenci sayısı düşük olabilir.
-        //      Alt yüzdelik dilimde çok fazla öğrenci varsa, başarı seviyesi düşük olabilir.
         $puanlar = $this->sinav_puanlari_model->get_all(array("sinav_id" => $sinav_id, "status !=" => 0));
         $skewness = calculate_skewness($puanlar);
         $variance = $this->sinav_puanlari_model->get_variance_puan(array("sinav_id" => $sinav_id));
         $puan_dagilimi = $this->sinav_puanlari_model->get_puan_dagilimi_yeni(array("sinav_id" => $sinav_id, "status !=" => 0));
 
-        $this->layout->data["istatistikler"] = array(
+
+        return array(
             "sinav_bilgisi" => $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id)),
             "toplam_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id)),
             "katilan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1)),
@@ -232,19 +241,6 @@ class Sinavlar extends CI_Controller
             "ogr_say_ilceler" => $this->sinav_puanlari_model->get_ilce_ogr_say(array("sinav_id" => $sinav_id)),
             "genel_mudurluk_ortalama" => $this->sinav_puanlari_model->get_genel_mudurluk_ortalama(array("sinav_id" => $sinav_id)),
         );
-
-        //download_json("istatistikler.json", $istatistikler);
-
-        // Sınav durumunu Analiz Tamamlandı olarak güncelle
-        $update = $this->sinavlar_model->update(
-            array("sinavlar.id" => $sinav_id),
-            array("sinavlar.yayin_durumu" => 1)
-        );
-
-        if ($update) {
-            $this->layout->set_view("report");
-            $this->layout->render();
-        }
     }
 
     public function excel_upload(): void
