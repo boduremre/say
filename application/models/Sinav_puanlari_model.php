@@ -337,16 +337,21 @@ class Sinav_puanlari_model extends CI_Model
 
     public function get_ilce_ogr_say(array $where = array()): mixed
     {
-        $query = $this->db->query(
-            "SELECT d.DistrictID, d.DistrictName AS ilce_adi, count(sp.puan) AS ogr_say" . "
-                    FROM sinav_puanlari sp
-                    JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
-                    JOIN districts d ON o.ILCE_ID = d.DistrictID
-                    WHERE sp.puan != 0 AND sp.status != 0 AND sp.sinav_id = ?
-                    GROUP BY d.DistrictID, d.DistrictName", $where);
+        $this->db->select("
+        d.DistrictID, 
+        d.DistrictName AS ilce_adi, 
+        COUNT(sp.puan) AS ogr_say,
+        COUNT(CASE WHEN sp.puan != 0 AND sp.status != 0 THEN 1 END) AS katilan_ogr_say,
+        (COUNT(puan) - COUNT(CASE WHEN sp.puan != 0 AND sp.status != 0 THEN 1 END)) AS fark");
+        $this->db->from("sinav_puanlari sp");
+        $this->db->join("okullar o", "sp.kurum_kodu = o.kurum_kodu", "inner");
+        $this->db->join("districts d", "o.ILCE_ID = d.DistrictID", "inner");
+        $this->db->where($where);
+        $this->db->group_by(["d.DistrictID", "d.DistrictName"]);
 
-        return $query->result_array();
+        return $this->db->get()->result_array();
     }
+
 
     public function get_genel_mudurluk_ortalama(array $where = array(), string $order_by = "ORDER BY sp.puan ASC"): mixed
     {
