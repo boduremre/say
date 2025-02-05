@@ -1,0 +1,8 @@
+SELECT
+	o.* 
+FROM
+	okullar_yeni o 
+WHERE
+	o.durum = 1 
+	AND ( o.kurum_turu LIKE '%ortaokul%' OR o.kurum_turu LIKE '%imam hatip lisesi%' ) 
+	AND o.kurum_kodu NOT IN ( SELECT DISTINCT sp.kurum_kodu FROM sinav_puanlari sp WHERE sp.sinav_id = 2 );
