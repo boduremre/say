@@ -48,7 +48,20 @@ class Sinav_puanlari_model extends CI_Model
     public function get_all(array $where = array()): mixed
     {
         // Veritabanından sınavın puanlarını al
-        $this->db->select("puan");
+        $this->db->select("*");
+        $this->db->from($this->table_name);
+        $this->db->where($where);
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * @param array $where
+     * @return mixed
+     */
+    public function get_puanlar(array $where = array()): mixed
+    {
+        // Veritabanından sınavın puanlarını al
+        $this->db->select("sinav_puanlari.puan");
         $this->db->from($this->table_name);
         $this->db->where($where);
         return $this->db->get()->result_array();
