@@ -283,6 +283,7 @@ class Sinavlar extends CI_Controller
                         "puan" => $puan,
                         "kurum_kodu" => $kurum_kodu,
                         "sinav_id" => $sinav_id,
+                        "sinif_seviyesi" => $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id))->sinif_seviyesi,
                         "user_id" => $this->ion_auth->user()->row()->id,
                         "status" => $puan == "G" ? 0 : 1,
                     );
