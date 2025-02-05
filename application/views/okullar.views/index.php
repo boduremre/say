@@ -5,7 +5,7 @@
                 <h4>Okullar</h4>
                 <div class="card-header-action">
                     <a href="<?php echo site_url('okullar/index'); ?>" class="btn btn-sm btn-primary disabled" disabled="disabled">
-                        Yeni Okul Ekle
+                        <i class="fa fa-plus"></i> Yeni Okul Ekle
                     </a>
                 </div>
             </div>
