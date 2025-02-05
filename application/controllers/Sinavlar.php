@@ -24,7 +24,7 @@ class Sinavlar extends CI_Controller
     public function index(): void
     {
         // sinavları getir
-        $this->layout->data["sinavlar"] = $this->sinavlar_model->get_all();
+        $this->layout->data["sinavlar"] = $this->sinavlar_model->get_all(array("status !=" => 0, "puan !=" => 0));
         $this->layout->render();
     }
 
@@ -213,16 +213,16 @@ class Sinavlar extends CI_Controller
         return array(
             "sinav_bilgisi" => $sinav_bilgisi,
             "toplam_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id)),
-            "katilan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1)),
-            "katilmayan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 0)),
+            "katilan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0)),
+            "katilmayan_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 0, "puan=" => 0)),
             "basarili_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1, "puan>=" => 50)),
             "basarisiz_ogrenci_sayisi" => $this->sinav_puanlari_model->count(array('sinav_id' => $sinav_id, "status" => 1, "puan<" => 50)),
             "basari_orani" => $this->sinav_puanlari_model->get_basari_orani($sinav_id, 50),
-            "min_puan" => $this->sinav_puanlari_model->get_min_puan(array('sinav_id' => $sinav_id)),
-            "max_puan" => $this->sinav_puanlari_model->get_max_puan(array('sinav_id' => $sinav_id)),
+            "min_puan" => $this->sinav_puanlari_model->get_min_puan(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0)),
+            "max_puan" => $this->sinav_puanlari_model->get_max_puan(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0)),
             "ranj" => $this->sinav_puanlari_model->get_ranj($sinav_id),
-            "avg_puan" => $this->sinav_puanlari_model->get_avg_puan(array('sinav_id' => $sinav_id)),
-            "median_puan" => $this->sinav_puanlari_model->get_median_puan(array('sinav_id' => $sinav_id)),
+            "avg_puan" => $this->sinav_puanlari_model->get_avg_puan(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0)),
+            "median_puan" => $this->sinav_puanlari_model->get_median_puan(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0)),
             "puan_dagilimi" => $puan_dagilimi,
             "puan_dagilim_grafigi" => draw_bar_chart($puan_dagilimi),
             "mode" => $this->sinav_puanlari_model->get_mode_puan($sinav_id),
@@ -235,8 +235,8 @@ class Sinavlar extends CI_Controller
             "skewness_graph_link" => plot_skewness_graph($puanlar),
             "determine_exam_difficulty_variance_skewness" => determine_exam_difficultyy($variance, $skewness),
             "DİKKAT" => "Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.",
-            "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "ilce_adi asc, KURUM_ADI asc"),
-            "puan_kurumlar_sirali" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id), "avg_puan desc"),
+            "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0), "ilce_adi asc, KURUM_ADI asc"),
+            "puan_kurumlar_sirali" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0), "avg_puan desc"),
             "sube_sayilari" => $this->sube_model->get_sube_sayisi(array('sinif_seviyesi' => $sinav_bilgisi->sinif_seviyesi)),
             "toplam_sube_sayisi" => $this->sube_model->count(array('sinif_seviyesi' => $sinav_bilgisi->sinif_seviyesi)),
             "puan_ilceler" => $this->sinav_puanlari_model->get_ilce_ortalama(array("sinav_id" => $sinav_id), "ORDER BY ilce_adi asc"),
