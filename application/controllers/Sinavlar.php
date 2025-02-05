@@ -205,7 +205,8 @@ class Sinavlar extends CI_Controller
         $this->load->helper('statistics');
 
         $sinav_bilgisi = $this->sinavlar_model->get(array('sinavlar.id' => $sinav_id));
-        $puanlar = $this->sinav_puanlari_model->get_all(array("sinav_id" => $sinav_id, "status !=" => 0));
+        $puanlar = $this->sinav_puanlari_model->get_puanlar(array("sinav_id" => $sinav_id, "status !=" => 0, "puan!=" => 0));
+
         $skewness = calculate_skewness($puanlar);
         $variance = $this->sinav_puanlari_model->get_variance_puan(array("sinav_id" => $sinav_id));
         $puan_dagilimi = $this->sinav_puanlari_model->get_puan_dagilimi_yeni(array("sinav_id" => $sinav_id, "status !=" => 0));
