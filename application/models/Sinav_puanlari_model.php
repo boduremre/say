@@ -135,6 +135,7 @@ class Sinav_puanlari_model extends CI_Model
     {
         $this->db->select_min('puan');
         $this->db->where($where);
+        $this->db->where('puan !=', 0); // "G" notunu hariç tut
         $this->db->where('status !=', 0); // "G" notunu hariç tut
         return $this->db->get($this->table_name)->row()->puan ?? null;
     }
@@ -147,6 +148,7 @@ class Sinav_puanlari_model extends CI_Model
     public function get_max_puan(array $where = array()): ?int
     {
         $this->db->select_max('puan');
+        $this->db->where('puan !=', 0);
         $this->db->where('status !=', 0); // "G" notunu hariç tut
         $this->db->where($where);
         return $this->db->get($this->table_name)->row()->puan ?? null;
@@ -160,6 +162,7 @@ class Sinav_puanlari_model extends CI_Model
     public function get_avg_puan(array $where = array()): ?float
     {
         $this->db->select_avg('puan');
+        $this->db->where('puan !=', 0);
         $this->db->where('status !=', 0); // "G" notunu hariç tut
         $this->db->where($where);
         return $this->db->get($this->table_name)->row()->puan ?? null;
@@ -170,6 +173,7 @@ class Sinav_puanlari_model extends CI_Model
         $this->db->select("puan");
         $this->db->where("puan IS NOT NULL");
         $this->db->where("status != 0");
+        $this->db->where("puan != 0");
         $this->db->where($where);
         $this->db->order_by("puan", "ASC");
         $query = $this->db->get("sinav_puanlari");
@@ -194,7 +198,7 @@ class Sinav_puanlari_model extends CI_Model
      */
     public function get_stddev_puan(int $sinav_id): ?float
     {
-        $sql = "SELECT STDDEV(puan) as stddev FROM sinav_puanlari WHERE status != 0 AND sinav_id = " . $sinav_id;
+        $sql = "SELECT STDDEV(puan) as stddev FROM sinav_puanlari WHERE puan != 0 AND status != 0 AND sinav_id = " . $sinav_id;
         return $this->db->query($sql)->row()->stddev;
     }
 
@@ -203,6 +207,7 @@ class Sinav_puanlari_model extends CI_Model
         $this->db->select("puan");
         $this->db->where("puan IS NOT NULL");
         $this->db->where("status != 0");
+        $this->db->where("puan != 0");
         $this->db->where($where);
         $query = $this->db->get("sinav_puanlari");
 
@@ -230,7 +235,7 @@ class Sinav_puanlari_model extends CI_Model
         $query = $this->db->query("
                 SELECT puan, COUNT(*) as tekrar_sayisi 
                 FROM sinav_puanlari 
-                WHERE puan IS NOT NULL AND status != 0 AND sinav_id= $sinav_id
+                WHERE puan IS NOT NULL AND status != 0 AND puan != 0 AND sinav_id= $sinav_id
                 GROUP BY puan 
                 ORDER BY tekrar_sayisi DESC 
                 LIMIT 1
@@ -245,7 +250,8 @@ class Sinav_puanlari_model extends CI_Model
         $toplam_ogrenci = $this->count(
             array(
                 "sinav_id" => $sinav_id,
-                "status !=" => 0
+                "status !=" => 0,
+                "puan !=" => 0
             )
         );
 
@@ -257,7 +263,8 @@ class Sinav_puanlari_model extends CI_Model
             array(
                 "sinav_id" => $sinav_id,
                 "puan >=" => $esik_deger,
-                "status !=" => 0
+                "status !=" => 0,
+                "puan !=" => 0
             )
         );
 
@@ -282,6 +289,7 @@ class Sinav_puanlari_model extends CI_Model
         $this->db->join('districts', 'okullar.ILCE_ID = districts.DistrictID');
         $this->db->where($where);
         $this->db->where('status !=', 0); // "G" notunu hariç tut
+        $this->db->where('puan !=', 0); // "G" notunu hariç tut
         $this->db->order_by($order_by);
         $this->db->group_by('sinav_puanlari.kurum_kodu'); // "G" notunu hariç tut
 
@@ -298,6 +306,7 @@ class Sinav_puanlari_model extends CI_Model
         $this->db->select_min('puan', 'min_puan');
         $this->db->where('sinav_id', $sinav_id);
         $this->db->where('status !=', 0);
+        $this->db->where('puan !=', 0);
         $query = $this->db->get('sinav_puanlari')->row();
 
         if (!$query || is_null($query->max_puan) || is_null($query->min_puan)) {
@@ -320,7 +329,7 @@ class Sinav_puanlari_model extends CI_Model
                     FROM sinav_puanlari sp
                     JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
                     JOIN districts d ON o.ILCE_ID = d.DistrictID
-                    WHERE sp.status = 1 AND sp.sinav_id = ? 
+                    WHERE sp.status = 1 AND sp.puan!=0 AND sp.sinav_id = ? 
                     GROUP BY d.DistrictID, d.DistrictName " . $order_by, $where);
 
         return $query->result_array();
@@ -333,7 +342,7 @@ class Sinav_puanlari_model extends CI_Model
                     FROM sinav_puanlari sp
                     JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
                     JOIN districts d ON o.ILCE_ID = d.DistrictID
-                    WHERE sp.status = 1 AND sp.sinav_id = ?
+                    WHERE sp.puan != 0 AND sp.status != 0 AND sp.sinav_id = ?
                     GROUP BY d.DistrictID, d.DistrictName", $where);
 
         return $query->result_array();
@@ -345,7 +354,7 @@ class Sinav_puanlari_model extends CI_Model
             "SELECT AVG(sp.puan) AS genel_mudurluk_ortalama, o.GENEL_MUDURLUK as genel_mudurluk_adi, MIN(sp.puan) as min_puan, MAX(sp.puan) as max_puan, COUNT(sp.puan) AS ogr_sayisi" . "
                     FROM sinav_puanlari sp
                     JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
-                    WHERE sp.status = 1 AND sp.sinav_id = ? 
+                    WHERE sp.puan != 0 AND sp.status = 1 AND sp.sinav_id = ? 
                     GROUP BY o.GENEL_MUDURLUK " . $order_by, $where);
 
         return $query->result_array();
