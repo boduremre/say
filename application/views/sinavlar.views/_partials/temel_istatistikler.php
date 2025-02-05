@@ -14,7 +14,7 @@
     <tr>
         <td><?php echo $istatistikler["toplam_ogrenci_sayisi"]; ?></td>
         <td><?php echo $istatistikler["katilan_ogrenci_sayisi"]; ?></td>
-        <td><?php echo $istatistikler["katilmayan_ogrenci_sayisi"]; ?></td>
+        <td><?php echo $istatistikler["toplam_ogrenci_sayisi"] - $istatistikler["katilan_ogrenci_sayisi"]; ?></td>
         <td><?php echo $istatistikler["basarili_ogrenci_sayisi"]; ?></td>
         <td><?php echo $istatistikler["basarisiz_ogrenci_sayisi"]; ?></td>
         <td><?php echo $istatistikler["basari_orani"]; ?></td>
