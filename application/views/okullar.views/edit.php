@@ -6,8 +6,8 @@
             <div class="card-header">
                 <h4>Okullar</h4>
                 <div class="card-header-action">
-                    <a href="<?php echo site_url('okullar/index'); ?>" class="btn btn-sm btn-primary">
-                        Kurum Listesi
+                    <a href="<?php echo site_url('okullar/index'); ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Okul/Kurum Listesi">
+                        <i class="fa fa-list"></i> Okul/Kurum Listesi
                     </a>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="maxlength-demo-3">İlçe</label>
+                    <label class="form-label" for="ilce_id">İlçe</label>
                     <select id="ilce_id" name="ilce_id" class="form-control" data-plugin="select2"
                             style="width: 100%" required>
                         <option value="">Seçiniz...</option>
@@ -29,41 +29,36 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="maxlength-demo-1">Okul/Kurum Adı</label>
-                    <input type="text" class="form-control" name="kurum_adi" value="<?php echo $okul->kurum_adi; ?>"/>
+                    <label class="form-label" for="kurum_adi">Okul/Kurum Adı</label>
+                    <input type="text" class="form-control" name="kurum_adi" id="kurum_adi" value="<?php echo $okul->kurum_adi; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="maxlength-demo-2">Kurum Kodu</label>
-                    <input type="text" class="form-control" name="kurum_kodu" value="<?php echo $okul->kurum_kodu; ?>"/>
+                    <label class="form-label" for="kurum_kodu">Kurum Kodu</label>
+                    <input type="text" class="form-control" name="kurum_kodu" id="kurum_kodu" value="<?php echo $okul->kurum_kodu; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="maxlength-demo-2">Adres</label>
-                    <input type="text" class="form-control" name="adres" value="<?php echo $okul->adres; ?>"/>
+                    <label class="form-label" for="adres">Adres</label>
+                    <input type="text" class="form-control" name="adres" id="adres" value="<?php echo $okul->adres; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="maxlength-demo-3">Eposta</label>
-                    <input type="email" class="form-control text-lowercase" name="eposta"
-                           value="<?php echo $okul->eposta; ?>"/>
+                    <label class="form-label" for="eposta">Eposta</label>
+                    <input type="email" class="form-control text-lowercase" name="eposta" id="eposta" value="<?php echo $okul->eposta; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="maxlength-demo-3">Eposta 2</label>
-                    <input type="email" class="form-control text-lowercase" name="eposta2"
-                           value="<?php echo $okul->eposta2; ?>"/>
+                    <label class="form-label" for="eposta2">Eposta 2</label>
+                    <input type="email" class="form-control text-lowercase" name="eposta2" id="eposta2" value="<?php echo $okul->eposta2; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Telefon</label>
-                    <input type="text" class="form-control" name="telefon" id="telefon"
-                           value="<?php echo $okul->telefon; ?>"/>
+                    <label class="form-label" for="telefon">Telefon</label>
+                    <input type="text" class="form-control" name="telefon" id="telefon" value="<?php echo $okul->telefon; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Web</label>
-                    <input type="text" class="form-control" name="web" id="web"
-                           value="<?php echo $okul->web; ?>"/>
+                    <label class="form-label" for="web">Web</label>
+                    <input type="text" class="form-control" name="web" id="web" value="<?php echo $okul->web; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Müdür</label>
-                    <input type="text" class="form-control" name="mudur" id="mudur"
-                           value="<?php echo $okul->mudur; ?>"/>
+                    <label class="form-label" for="mudur">Müdür</label>
+                    <input type="text" class="form-control" name="mudur" id="mudur" value="<?php echo $okul->mudur; ?>"/>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Müdür Cep Telefonu</label>
@@ -81,7 +76,7 @@
                            value="<?php echo $okul->mudur_yrd_cep; ?>"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Durum</label>
+                    <label class="form-label" for="durum">Durum</label>
                     <select id="durum" name="durum" class="form-control" data-plugin="select2" style="width: 100%" required>
                         <option value="">Seçiniz...</option>
                         <option value="1" <?php echo $okul->durum == 1 ? "selected" : ""; ?>>Aktif</option>
@@ -89,8 +84,12 @@
                     </select>
                 </div>
                 <div class="form-group pull-right">
-                    <input type="submit" id="submit_button" name="submit" value="Güncelle" class="btn btn-success"/>
-                    <a href="<?php echo site_url('okullar/index'); ?>" class="btn btn-danger">İptal</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Güncelle
+                    </button>
+                    <a href="<?php echo site_url('okullar/index'); ?>" class="btn btn-danger">
+                        <i class="fa fa-times"></i> İptal
+                    </a>
                 </div>
             </div><!-- .widget-body -->
         </div><!-- .widget -->
