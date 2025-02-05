@@ -18,11 +18,11 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Sınav Adı</th>
-                                <th>Sınav Tarihi</th>
+                                <th class="text-center">Sınav Tarihi</th>
                                 <th class="text-center">Sınıf</th>
                                 <th class="text-center">Soru Say.</th>
-                                <th class="text-center">Top. Öğr. Say.</th>
-                                <th>Durumu</th>
+                                <th class="text-center">Katılan Öğr. Say.</th>
+                                <th class="text-center">Durumu</th>
                                 <th>İşlemler</th>
                             </tr>
                         </thead>
@@ -35,11 +35,11 @@
                                             <?php echo $sinav->sinav_adi; ?>
                                         </span>
                                     </td>
-                                    <td class="text-nowrap"><?php echo date("d.m.Y H:i", strtotime($sinav->baslangic_tarihi)); ?></td>
+                                    <td class="text-nowrap text-center"><?php echo date("d.m.Y H:i", strtotime($sinav->baslangic_tarihi)); ?></td>
                                     <td class="text-center"><?php echo $sinav->sinif_adi; ?></td>
                                     <td class="text-center"><?php echo $sinav->soru_sayisi; ?></td>
                                     <td class="text-center"><?php echo $sinav->ogrenci_sayisi; ?></td>
-                                    <td>
+                                    <td class="text-center">
                                         <?php if ($sinav->yayin_durumu == 0) { ?>
                                             <span class="badge badge-primary">Beklemede</span>
                                         <?php } elseif ($sinav->yayin_durumu == 1) { ?>
