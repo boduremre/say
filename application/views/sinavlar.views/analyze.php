@@ -6,12 +6,12 @@
             <div class="card-header">
                 <h4>Sınav Bilgileri</h4>
                 <div class="card-header-action">
-                    <a href="<?php echo site_url('sinavlar/index'); ?>" class="btn btn-sm btn-primary">
-                        Sınavları Listele
+                    <a href="<?php echo site_url('sinavlar/index'); ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Yeni Sınav Ekle">
+                        <i class="fa fa-list"></i> Sınavları Listele
                     </a>
                     <?php if ($sinav->yayin_durumu == 2): ?>
-                        <a href="<?php echo site_url('sinavlar/do/analyze/') . $sinav->id; ?>" class="btn btn-sm btn-success">
-                            Analizi Başlat
+                        <a href="<?php echo site_url('sinavlar/do/analyze/') . $sinav->id; ?>" class="btn btn-sm btn-success" data-toggle="tooltip" title="Analizi Başlat">
+                            <i class="fa fa-hourglass-start"></i> Analizi Başlat
                         </a>
                     <?php endif; ?>
                 </div>
@@ -32,9 +32,9 @@
                         <tr>
                             <td><?php echo $sinav->id; ?></td>
                             <td class="text-nowrap">
-                                        <span data-toggle="tooltip" title="<?php echo $sinav->aciklama; ?>">
-                                            <?php echo $sinav->sinav_adi; ?>
-                                        </span>
+                                <span data-toggle="tooltip" title="<?php echo $sinav->aciklama; ?>">
+                                    <?php echo $sinav->sinav_adi; ?>
+                                </span>
                             </td>
                             <td class="text-nowrap"><?php echo date("d.m.Y H:i", strtotime($sinav->baslangic_tarihi)); ?></td>
                             <td><?php echo $sinav->sinif_adi; ?></td>
