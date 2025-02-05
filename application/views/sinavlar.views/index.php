@@ -6,8 +6,8 @@
             <div class="card-header">
                 <h4>Sınavlar</h4>
                 <div class="card-header-action">
-                    <a href="<?php echo site_url('sinavlar/create'); ?>" class="btn btn-sm btn-primary">
-                        Yeni Sınav Ekle
+                    <a href="<?php echo site_url('sinavlar/create'); ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Yeni Sınav Ekle">
+                       <i class="fa fa-plus"></i> Yeni Sınav Ekle
                     </a>
                 </div>
             </div>
@@ -19,8 +19,9 @@
                                 <th>ID</th>
                                 <th>Sınav Adı</th>
                                 <th>Sınav Tarihi</th>
-                                <th>Sınıf</th>
-                                <th>Soru Say.</th>
+                                <th class="text-center">Sınıf</th>
+                                <th class="text-center">Soru Say.</th>
+                                <th class="text-center">Top. Öğr. Say.</th>
                                 <th>Durumu</th>
                                 <th>İşlemler</th>
                             </tr>
@@ -35,8 +36,9 @@
                                         </span>
                                     </td>
                                     <td class="text-nowrap"><?php echo date("d.m.Y H:i", strtotime($sinav->baslangic_tarihi)); ?></td>
-                                    <td><?php echo $sinav->sinif_adi; ?></td>
-                                    <td><?php echo $sinav->soru_sayisi; ?></td>
+                                    <td class="text-center"><?php echo $sinav->sinif_adi; ?></td>
+                                    <td class="text-center"><?php echo $sinav->soru_sayisi; ?></td>
+                                    <td class="text-center"><?php echo $sinav->ogrenci_sayisi; ?></td>
                                     <td>
                                         <?php if ($sinav->yayin_durumu == 0) { ?>
                                             <span class="badge badge-primary">Beklemede</span>
