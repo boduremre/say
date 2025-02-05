@@ -51,7 +51,6 @@ class Sinav_puanlari_model extends CI_Model
         $this->db->select("puan");
         $this->db->from($this->table_name);
         $this->db->where($where);
-
         return $this->db->get()->result_array();
     }
 
