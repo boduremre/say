@@ -7,7 +7,7 @@
                 <h4>Sınav Düzenle</h4>
                 <div class="card-header-action">
                     <a href="<?php echo site_url('sinavlar/index'); ?>" class="btn btn-sm btn-primary">
-                        Sınavları Listele
+                        <i class="fa fa-list"></i> Sınavları Listele
                     </a>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                         </select>
                     </div>
                     <div class="col-md-6 form-group">
-                        <label class="control-label">Sınıf Düzeyi</label>
+                        <label class="control-label" for="sinif_id">Sınıf Düzeyi</label>
                         <select id="sinif_id" name="sinif_id" class="form-control" style="width: 100% " required>
                             <?php
                             foreach ($siniflar as $sinif) {
@@ -63,16 +63,20 @@
                         <input maxlength="100" type="number" class="form-control" placeholder="Soru Sayısı Giriniz" name="soru_sayisi" id="soru_sayisi" required value="<?php echo $sinav->soru_sayisi; ?>"/>
                     </div>
                     <div class="col-md-6 form-group">
-                        <label class="control-label">Sınav Tarihi</label>
-                        <input type="datetime-local" class="form-control" name="baslangic_tarihi" value="<?php echo isset($sinav->baslangic_tarihi) ?
+                        <label class="control-label" for="baslangic_tarihi">Sınav Tarihi</label>
+                        <input type="datetime-local" class="form-control" id="baslangic_tarihi" name="baslangic_tarihi" value="<?php echo isset($sinav->baslangic_tarihi) ?
                             set_value('baslangic_tarihi', date('Y-m-d\TH:i', strtotime($sinav->baslangic_tarihi))) : set_value('baslangic_tarihi'); ?>">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 form-group">
                         <div class="pull-right">
-                            <input type="submit" id="submit_button" name="submit" class="btn btn-primary" value="Güncelle"/>
-                            <a href="<?php echo site_url("sinavlar/index"); ?>" class="btn btn-danger">İptal</a>
+                            <button type="submit" id="submit_button" name="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> Güncelle
+                            </button>
+                            <a href="<?php echo site_url("sinavlar/index"); ?>" class="btn btn-danger">
+                                <i class="fa fa-times"></i> İptal
+                            </a>
                         </div>
                     </div>
                 </div>
