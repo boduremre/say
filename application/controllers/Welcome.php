@@ -26,7 +26,7 @@ class Welcome extends CI_Controller
      */
     public function index(): void
     {
-        $this->layout->data["sinavlar"] = $this->sinavlar_model->all();
+        $this->layout->data["sinavlar"] = $this->sinavlar_model->all(array("status !=" => 0, "puan !=" => 0));
         $this->layout->render();
     }
 
