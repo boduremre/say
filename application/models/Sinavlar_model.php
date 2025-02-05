@@ -20,11 +20,12 @@ class Sinavlar_model extends CI_Model
      * @param string $select
      * @return object|array
      */
-    public function all(array $where = array(), string $order = "created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi"): object|array
+    public function all(array $where = array(), string $order = "created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi, COUNT(sp.ogrenci_id) as ogrenci_sayisi"): object|array
     {
         $this->db->select($select);
         $this->db->from($this->table_name);
         $this->db->join('siniflar', 'siniflar.sinif_id = sinavlar.sinif_id');
+        $this->db->join("sinav_puanlari as sp", "sinavlar.sinav_id = sp.sinav_id", "left");
         $this->db->where($where);
         $this->db->order_by($order);
         return $this->db->get()->result();
@@ -69,12 +70,14 @@ class Sinavlar_model extends CI_Model
         return $this->db->get()->row()->soru_sayisi;
     }
 
-    public function get_all(array $where = array(), string $order = "created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi"): object|array
+    public function get_all(array $where = array(), string $order = "created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi, COUNT(sp.id) as ogrenci_sayisi"): object|array
     {
         $this->db->select($select);
         $this->db->from($this->table_name);
         $this->db->where($where);
         $this->db->join('siniflar', 'siniflar.sinif_id = sinavlar.sinif_id');
+        $this->db->join("sinav_puanlari as sp", "sinavlar.id = sp.sinav_id", "left"); // LEFT JOIN ile birleştiriyoruz
+        $this->db->group_by("sinavlar.id"); // Her sınav için toplam öğrenci sayısını hesaplıyoruz
         $this->db->order_by($order);
         return $this->db->get()->result();
     }
