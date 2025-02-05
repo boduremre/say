@@ -63,8 +63,12 @@
                 </div>
                 <div class="row pull-right mt-2">
                     <div class="col-md-12 ">
-                        <input type="submit" class="btn btn-primary" value="Gönder"/>
-                        <a href="<?php echo site_url("sinavlar/index"); ?>" class="btn btn-danger">İptal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-upload"></i> Gönder
+                        </button>
+                        <a href="<?php echo site_url("sinavlar/index"); ?>" class="btn btn-danger">
+                            <i class="fa fa-times"></i> İptal
+                        </a>
                     </div>
                 </div>
 
