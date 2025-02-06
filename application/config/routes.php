@@ -56,3 +56,4 @@ $route['sinavlar/excel/upload'] = 'Sinavlar/excel_upload';
 $route['sinavlar/do/analyze/(:any)'] = 'Sinavlar/do_analyze/$1';
 $route['sinavlar/truncate/analyze'] = 'Sinavlar/truncate_analyze';
 $route['sinavlar/download/json/Method…'] = 'Sinavlar/download_json/$1';
+$route['sinavlar/general-analysis-report'] = 'Sinavlar/general_analysis_report';
