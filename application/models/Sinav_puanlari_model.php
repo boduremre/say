@@ -310,6 +310,32 @@ class Sinav_puanlari_model extends CI_Model
     }
 
     /**
+     * @param array $where
+     * @param string $order_by
+     * @return array|object
+     */
+    public function get_min_max_avg_puan_proje_okullari(array $where = array(), string $order_by = "avg_puan asc"): array|object
+    {
+        $this->db->select('sinav_puanlari.kurum_kodu, okullar.KURUM_ADI');
+        $this->db->select("districts.DistrictName AS ilce_adi");
+        $this->db->select('COUNT(sinav_puanlari.id) as ogrenci_sayisi');
+        $this->db->select_max('sinav_puanlari.puan', 'max_puan');
+        $this->db->select_min('sinav_puanlari.puan', 'min_puan');
+        $this->db->select_avg('sinav_puanlari.puan', 'avg_puan');
+        $this->db->join('okullar', 'sinav_puanlari.kurum_kodu = okullar.kurum_kodu');
+        $this->db->join('districts', 'okullar.ILCE_ID = districts.DistrictID');
+        $this->db->where($where);
+        $this->db->where('okullar.proje_okulu', 1); // Proje okulu olanları filtrele
+        $this->db->where('status !=', 0); // "G" notunu hariç tut
+        $this->db->where('puan !=', 0); // "G" notunu hariç tut
+        $this->db->order_by($order_by);
+        $this->db->group_by('sinav_puanlari.kurum_kodu'); // Gruplama
+
+        return $this->db->get($this->table_name)->result_array();
+    }
+
+
+    /**
      * @param int $sinav_id
      * @return int
      */
@@ -348,24 +374,32 @@ class Sinav_puanlari_model extends CI_Model
         return $query->result_array();
     }
 
+    /**
+     * @param array $where
+     * @return mixed
+     */
     public function get_ilce_ogr_say(array $where = array()): mixed
     {
         $this->db->select("
         d.DistrictID, 
         d.DistrictName AS ilce_adi, 
-        COUNT(sp.puan) AS ogr_say,
+        COUNT(sp.id) AS ogr_say,
         COUNT(CASE WHEN sp.puan != 0 AND sp.status != 0 THEN 1 END) AS katilan_ogr_say,
         (COUNT(puan) - COUNT(CASE WHEN sp.puan != 0 AND sp.status != 0 THEN 1 END)) AS fark");
         $this->db->from("sinav_puanlari sp");
-        $this->db->join("okullar o", "sp.kurum_kodu = o.kurum_kodu", "inner");
-        $this->db->join("districts d", "o.ILCE_ID = d.DistrictID", "inner");
+        $this->db->join("okullar o", "sp.kurum_kodu = o.kurum_kodu");
+        $this->db->join("districts d", "o.ILCE_ID = d.DistrictID");
         $this->db->where($where);
         $this->db->group_by(["d.DistrictID", "d.DistrictName"]);
 
         return $this->db->get()->result_array();
     }
 
-
+    /**
+     * @param array $where
+     * @param string $order_by
+     * @return mixed
+     */
     public function get_genel_mudurluk_ortalama(array $where = array(), string $order_by = "ORDER BY sp.puan ASC"): mixed
     {
         $query = $this->db->query(
@@ -399,6 +433,10 @@ class Sinav_puanlari_model extends CI_Model
         return $this->db->get()->result_array();
     }
 
+    /**
+     * @param array $where
+     * @return array
+     */
     public function get_puan_dagilimi_yeni(array $where = array()): array
     {
         $this->db->select("CASE 
