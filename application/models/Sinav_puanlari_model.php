@@ -458,4 +458,29 @@ class Sinav_puanlari_model extends CI_Model
 
         return $this->db->get()->result_array();
     }
+
+    /**
+     * @param string $order_by
+     * @return array
+     */
+    public function get_all_exam_stats_per_school(string $order_by = "avg_puan asc"): array
+    {
+        $this->db->select('sinav_puanlari.kurum_kodu, okullar.KURUM_ADI');
+        $this->db->select("sinav_puanlari.sinav_id");
+        $this->db->select("districts.DistrictName AS ilce_adi");
+        $this->db->select('COUNT(sinav_puanlari.id) as ogrenci_sayisi');
+        $this->db->select_max('sinav_puanlari.puan', 'max_puan');
+        $this->db->select_min('sinav_puanlari.puan', 'min_puan');
+        $this->db->select_avg('sinav_puanlari.puan', 'avg_puan');
+        $this->db->join('okullar', 'sinav_puanlari.kurum_kodu = okullar.kurum_kodu');
+        $this->db->join('districts', 'okullar.ILCE_ID = districts.DistrictID');
+        $this->db->where('sinav_puanlari.puan !=', 0); // Geçersiz puanları hariç tut
+        $this->db->where('sinav_puanlari.status !=', 0); // Geçersiz durumları hariç tut
+        $this->db->group_by(['sinav_puanlari.kurum_kodu', 'sinav_puanlari.sinav_id']); // Okul ve sınav bazında gruplama
+        $this->db->order_by($order_by);
+
+        return $this->db->get('sinav_puanlari')->result_array();
+    }
+
+
 }
