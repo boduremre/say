@@ -24,7 +24,28 @@ class Sinavlar extends CI_Controller
     public function index(): void
     {
         // sinavları getir
-        $this->layout->data["sinavlar"] = $this->sinavlar_model->get_all(array("status !=" => 0, "puan !=" => 0));
+        $this->layout->data["sinavlar"] = $this->sinavlar_model->all();
+        $this->layout->render();
+    }
+
+
+    /**
+     * @param $kurum_kodu
+     * @param $sinav_id
+     * @return void
+     */
+    public function students($kurum_kodu, $sinav_id): void
+    {
+        //load model
+        $this->load->model("sinav_puanlari_model");
+
+        // sinavları getir
+        $where = array(
+            "sinav_puanlari.kurum_kodu" => $kurum_kodu,
+            "sinav_puanlari.sinav_id" => $sinav_id
+        );
+
+        $this->layout->data["students"] = $this->sinav_puanlari_model->all($where);
         $this->layout->render();
     }
 
@@ -52,7 +73,7 @@ class Sinavlar extends CI_Controller
             "ders_id" => $this->input->post("ders_id", TRUE),
             "sinif_id" => $this->input->post("sinif_id", TRUE),
             "yayin_durumu" => $this->input->post("yayin_durumu", TRUE),
-            "dosya_adresi" => "",
+            "dosya_adresi" => null,
             "soru_sayisi" => $this->input->post("soru_sayisi", TRUE),
             "secenek_sayisi" => 0,
             "dogrulama_kodu" => strtolower(GUID()),
@@ -61,7 +82,7 @@ class Sinavlar extends CI_Controller
             "sure" => 40,
             "user_id" => $this->ion_auth->user()->row()->id,
             "sinav_kodu" => "SNV-" . rand(150, 999),
-            "cevap_anahtari" => "",
+            "cevap_anahtari" => null,
         );
 
         $result = $this->sinavlar_model->create($form_values);
@@ -129,7 +150,6 @@ class Sinavlar extends CI_Controller
     public function analyze(string $id): void
     {
         $this->layout->data["sinav"] = $this->sinavlar_model->get(array('sinavlar.id' => $id));
-
         $this->layout->render();
     }
 
@@ -233,7 +253,7 @@ class Sinavlar extends CI_Controller
             "skewness" => $skewness,
             "interpret_skewness" => interpret_skewness($skewness),
             "skewness_determine_exam_difficulty" => determine_exam_difficulty($skewness),
-            "skewness_graph_link" => plot_skewness_graph($puanlar),
+            //"skewness_graph_link" => plot_skewness_graph($puanlar),
             "determine_exam_difficulty_variance_skewness" => determine_exam_difficultyy($variance, $skewness),
             "DİKKAT" => "Skewness ve Varyanstan; varyans genellikle sınav zorluğu ve öğrencilerin performansı hakkında daha kesin bir bilgi verir.",
             "puan_kurumlar" => $this->sinav_puanlari_model->get_min_max_avg_puan_kurum(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0), "ilce_adi asc, KURUM_ADI asc"),
