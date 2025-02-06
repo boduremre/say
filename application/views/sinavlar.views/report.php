@@ -39,6 +39,8 @@
                 <h5 class="text-center">Okul Bazında Sınav Bilgileri</h5>
                 <?php $this->load->view("sinavlar.views/_partials/okul_puan_ort"); ?>
                 <?php $this->load->view("sinavlar.views/_partials/okul_puan_ort_sirali"); ?>
+                <h5 class="text-center">Proje Okulları Bazında Sınav Bilgileri</h5>
+                <?php $this->load->view("sinavlar.views/_partials/proje_okullari_puan_ort_sirali"); ?>
                 <h5 class="text-center">Genel Müdürlük Bazında Sınav Bilgileri</h5>
                 <?php $this->load->view("sinavlar.views/_partials/genel_mudurluk_puan_ort"); ?>
             </div>
