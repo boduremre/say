@@ -26,11 +26,11 @@ class Sinav_puanlari_model extends CI_Model
      * @param int $limit
      * @return array|object
      */
-    public function all(array $where = array(), string $order = "id ASC", string $select = "*", int $limit = 10000): array|object
+    public function all(array $where = array(), string $order = "sinav_puanlari.id ASC", string $select = "sinav_puanlari.*, okullar.KURUM_ADI", int $limit = 10000): array|object
     {
         $this->db->select($select);
         $this->db->from($this->table_name);
-
+        $this->db->join('okullar', 'sinav_puanlari.kurum_kodu = okullar.kurum_kodu');
         if (!empty($where)) {
             $this->db->where($where);
         }
