@@ -10,7 +10,7 @@ class Okullar_model extends CI_Model
      */
     public function get(array $where = array()): mixed
     {
-        $this->db->select('okullar.id,okullar.kurum_kodu, okullar.kurum_adi, okullar.eposta, okullar.eposta2, okullar.web, okullar.telefon, okullar.adres, okullar.mudur, okullar.mudur_cep, okullar.mudur_yrd, okullar.mudur_yrd_cep, okullar.il_id, okullar.durum, okullar.ilce_id, cities.CityName as il_adi, districts.DistrictName as ilce_adi');
+        $this->db->select('okullar.id,okullar.kurum_kodu, okullar.kurum_adi, okullar.eposta, okullar.eposta2, okullar.web, okullar.telefon, okullar.adres, okullar.mudur, okullar.mudur_cep, okullar.mudur_yrd, okullar.mudur_yrd_cep, okullar.il_id, okullar.durum, okullar.proje_okulu, okullar.ilce_id, cities.CityName as il_adi, districts.DistrictName as ilce_adi');
         $this->db->from('okullar');
         $this->db->join('cities', 'okullar.IL_ID = cities.CityID');
         $this->db->join('districts', 'okullar.ILCE_ID = districts.DistrictID');
