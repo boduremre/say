@@ -76,6 +76,14 @@
                            value="<?php echo $okul->mudur_yrd_cep; ?>"/>
                 </div>
                 <div class="form-group">
+                    <label class="form-label" for="proje_okulu">Proje Okulu</label>
+                    <select id="proje_okulu" name="proje_okulu" class="form-control" data-plugin="select2" style="width: 100%" required>
+                        <option value="">Seçiniz...</option>
+                        <option value="1" <?php echo $okul->proje_okulu == 1 ? "selected" : ""; ?>>Evet</option>
+                        <option value="0" <?php echo $okul->proje_okulu == 0 ? "selected" : ""; ?>>Hayır</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label class="form-label" for="durum">Durum</label>
                     <select id="durum" name="durum" class="form-control" data-plugin="select2" style="width: 100%" required>
                         <option value="">Seçiniz...</option>
