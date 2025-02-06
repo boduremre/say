@@ -48,13 +48,13 @@ if (!function_exists('interpret_skewness')) {
     function interpret_skewness($skewness): string
     {
         if ($skewness > 1) {
-            return 'Dağılım sağa çarpık (long tail right)';
+            return 'Dağılım Sağa Çarpık (long tail right)';
         } elseif ($skewness < -1) {
-            return 'Dağılım sola çarpık (long tail left)';
+            return 'Dağılım Sola Çarpık (long tail left)';
         } elseif ($skewness >= -1 && $skewness <= 1) {
-            return 'Dağılım simetrik';
+            return 'Dağılım Simetrik';
         } else {
-            return 'Çarpıklık değeri hesaplanamadı';
+            return 'Çarpıklık Değeri Hesaplanamadı!';
         }
     }
 }
