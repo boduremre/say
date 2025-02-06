@@ -58,6 +58,7 @@ class Okullar extends CI_Controller
             "eposta" => $this->input->post("eposta", TRUE),
             "eposta2" => $this->input->post("eposta2", TRUE),
             "telefon" => $this->input->post("telefon", TRUE),
+            "proje_okulu" => $this->input->post("proje_okulu", TRUE),
             "durum" => $this->input->post("durum", TRUE),
         );
 
