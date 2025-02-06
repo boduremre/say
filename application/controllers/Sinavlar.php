@@ -175,6 +175,44 @@ class Sinavlar extends CI_Controller
         $this->layout->render();
     }
 
+    public function general_analysis_report(): void
+    {
+        // load model
+        $this->load->model('sinav_puanlari_model');
+
+        // sinavları getir
+        $sinavlar = $this->sinavlar_model->all();
+
+        // Dinamik sütunlar oluştur
+        $columns = [];
+        foreach ($sinavlar as $sinav) {
+            $sinav_id = $sinav->id;
+            $sinav_adi = $sinav->sinav_kodu;
+
+            $columns[] = "MAX(CASE WHEN sinav_puanlari.sinav_id = {$sinav_id} AND sinav_puanlari.status = 1 AND sinav_puanlari.puan != 0 THEN sinav_puanlari.puan ELSE NULL END) AS '{$sinav_adi}_max'";
+            $columns[] = "MIN(CASE WHEN sinav_puanlari.sinav_id = {$sinav_id} AND sinav_puanlari.status = 1 AND sinav_puanlari.puan != 0 THEN sinav_puanlari.puan ELSE NULL END) AS '{$sinav_adi}_min'";
+            $columns[] = "AVG(CASE WHEN sinav_puanlari.sinav_id = {$sinav_id} AND sinav_puanlari.status = 1 AND sinav_puanlari.puan != 0 THEN sinav_puanlari.puan ELSE NULL END) AS '{$sinav_adi}_avg'";
+        }
+
+        // Ana sorguyu oluştur
+        $this->db->select('okullar.kurum_kodu, okullar.KURUM_ADI, districts.DistrictName AS ilce_adi');
+        $this->db->select(implode(', ', $columns)); // Dinamik sütunları ekle
+        $this->db->join('sinav_puanlari', 'okullar.kurum_kodu = sinav_puanlari.kurum_kodu', 'left');
+        $this->db->join('districts', 'okullar.ILCE_ID = districts.DistrictID', 'left');
+        $this->db->where("kurum_turu!=", "İlkokul");
+        $this->db->where("kurum_turu!=", "Özel Türk İlkokulu");
+        $this->db->where("kurum_turu!=", "Özel Türk İlkokulu");
+        $this->db->where("durum", 1);
+        $this->db->group_by(['okullar.kurum_kodu', 'okullar.KURUM_ADI', 'districts.DistrictName']);
+        $this->db->order_by("ilce_adi", "ASC");
+
+        $results = $this->db->get('okullar')->result_array();
+
+        $this->layout->set_view("general_analysis_report");
+        $this->layout->data["results"] = $results;
+        $this->layout->render();
+    }
+
     /**
      * @desc Kaydedilen sınavın analiz edilmesini sağlar.
      * @param string $sinav_id
