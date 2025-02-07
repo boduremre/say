@@ -189,9 +189,19 @@ class Sinavlar extends CI_Controller
             $sinav_id = $sinav->id;
             $sinav_adi = $sinav->sinav_kodu;
 
-            $columns[] = "MAX(CASE WHEN sinav_puanlari.sinav_id = {$sinav_id} AND sinav_puanlari.status = 1 AND sinav_puanlari.puan != 0 THEN sinav_puanlari.puan ELSE NULL END) AS '{$sinav_adi}_max'";
             $columns[] = "MIN(CASE WHEN sinav_puanlari.sinav_id = {$sinav_id} AND sinav_puanlari.status = 1 AND sinav_puanlari.puan != 0 THEN sinav_puanlari.puan ELSE NULL END) AS '{$sinav_adi}_min'";
+            $columns[] = "MAX(CASE WHEN sinav_puanlari.sinav_id = {$sinav_id} AND sinav_puanlari.status = 1 AND sinav_puanlari.puan != 0 THEN sinav_puanlari.puan ELSE NULL END) AS '{$sinav_adi}_max'";
             $columns[] = "AVG(CASE WHEN sinav_puanlari.sinav_id = {$sinav_id} AND sinav_puanlari.status = 1 AND sinav_puanlari.puan != 0 THEN sinav_puanlari.puan ELSE NULL END) AS '{$sinav_adi}_avg'";
+
+            // İl genelindeki ortalama puan
+            $columns[] = "(SELECT AVG(sp.puan) 
+                       FROM sinav_puanlari sp
+                       JOIN okullar o ON sp.kurum_kodu = o.kurum_kodu
+                       WHERE sp.sinav_id = {$sinav_id} 
+                         AND sp.status = 1 
+                         AND sp.puan != 0 
+                         AND o.kurum_turu NOT IN ('İlkokul', 'Özel Türk İlkokulu')) 
+                      AS '{$sinav_adi}_il_avg'";
         }
 
         // Ana sorguyu oluştur
