@@ -293,7 +293,7 @@ class Sinavlar extends CI_Controller
             "avg_puan" => $this->sinav_puanlari_model->get_avg_puan(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0)),
             "median_puan" => $this->sinav_puanlari_model->get_median_puan(array('sinav_id' => $sinav_id, "status" => 1, "puan!=" => 0)),
             "puan_dagilimi" => $puan_dagilimi,
-            "puan_dagilim_grafigi" => draw_bar_chart($puan_dagilimi),
+            "puan_dagilim_grafigi" => draw_bar_chart_dikey($puan_dagilimi),
             "mode" => $this->sinav_puanlari_model->get_mode_puan($sinav_id),
             "standart_sapma" => $this->sinav_puanlari_model->get_stddev_puan($sinav_id),
             "varyans" => $variance,
