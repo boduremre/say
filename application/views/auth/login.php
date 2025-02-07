@@ -34,7 +34,7 @@
                             <?php echo form_open("auth/login"); ?>
                                 <div class="form-group">
                                     <label for="identity"><?php echo lang('login_identity_label', 'identity'); ?></label>
-                                    <input id="identity" type="email" class="form-control" name="identity" tabindex="1" required autofocus>
+                                    <input id="identity" type="email" class="form-control" name="identity" tabindex="1" required autofocus placeholder="E-posta/Kullanıcı Adı">
                                 </div>
                                 <div class="form-group">
                                     <div class="d-block">
@@ -45,7 +45,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                    <input id="password" type="password" class="form-control" name="password" tabindex="2" required>
+                                    <input id="password" type="password" class="form-control" name="password" tabindex="2" required placeholder="Parola">
                                 </div>
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox">
