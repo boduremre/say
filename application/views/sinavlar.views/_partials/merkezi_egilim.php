@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         <tr>
-            <td><?php echo  $istatistikler["avg_puan"]; ?></td>
+            <td><?php echo  number_format($istatistikler["avg_puan"],2,","); ?></td>
             <td><?php echo  $istatistikler["median_puan"]; ?></td>
             <td><?php echo  $istatistikler["mode"]->puan . " (" . $istatistikler["mode"]->tekrar_sayisi . ")"; ?></td>
         </tr>

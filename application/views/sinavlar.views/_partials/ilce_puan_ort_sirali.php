@@ -19,7 +19,7 @@
                 <td><?php echo $row["ogr_sayisi"]; ?></td>
                 <td><?php echo $row["min_puan"]; ?></td>
                 <td><?php echo $row["max_puan"]; ?></td>
-                <td><?php echo number_format($row["ilce_ortalama"],2); ?></td>
+                <td><?php echo number_format($row["ilce_ortalama"],2,","); ?></td>
             </tr>
         <?php endforeach; ?>
         <tr class="bg-success fw-bold">
@@ -28,7 +28,7 @@
             <td><?php echo $istatistikler["katilan_ogrenci_sayisi"]; ?></td>
             <td><?php echo  $istatistikler["min_puan"]; ?></td>
             <td><?php echo  $istatistikler["max_puan"]; ?></td>
-            <td><?php echo  number_format($istatistikler["avg_puan"],2); ?></td>
+            <td><?php echo  number_format($istatistikler["avg_puan"],2,","); ?></td>
         </tr>
     </tbody>
 </table>

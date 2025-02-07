@@ -22,7 +22,7 @@
             <td><?php echo $row["ogr_say"]; ?></td>
             <td><?php echo $row["katilan_ogr_say"]; ?></td>
             <td><?php echo $row["fark"]; ?></td>
-            <td><?php echo number_format($row["katilan_ogr_say"] * 100 / $row["ogr_say"], 2); ?></td>
+            <td><?php echo number_format($row["katilan_ogr_say"] * 100 / $row["ogr_say"], 2, ","); ?></td>
         </tr>
     <?php endforeach; ?>
     <tr class="bg-success fw-bold">
@@ -30,7 +30,7 @@
         <td><?php echo $toplam; ?></td>
         <td><?php echo $katilan_ogr_say; ?></td>
         <td><?php echo $fark; ?></td>
-        <td><?php echo number_format($katilan_ogr_say * 100 / $toplam, 2); ?></td>
+        <td><?php echo number_format($katilan_ogr_say * 100 / $toplam, 2,","); ?></td>
     </tr>
     </tbody>
 </table>
