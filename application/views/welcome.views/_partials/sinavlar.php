@@ -70,7 +70,7 @@
                             <i class="fa fa-share"></i>
                         </a>
                     <?php } else { ?>
-                        <a href="<?php echo site_url('sinavlar/do/analyze/') . $sinav->id; ?>" data-toggle="tooltip" title="Analiz Sonucu" class="btn btn-primary btn-xs">
+                        <a href="<?php echo site_url('sinavlar/do/analyze/') . $sinav->id; ?>" data-toggle="tooltip" title="Analiz Sonucunu Görüntüle" class="btn btn-primary btn-xs">
                             <i class="fa fa-chart-pie"></i>
                         </a>
                     <?php } ?>
