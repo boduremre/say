@@ -20,17 +20,18 @@ class Sinavlar_model extends CI_Model
      * @param string $select
      * @return object|array
      */
-    public function all(array $where = array(), string $order = "created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi, COUNT(sp.id) as ogrenci_sayisi, AVG(puan) as ortalama_puan"): object|array
+    public function all(array $where = array(), string $order = "sinavlar.created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi, 
+    IFNULL(SUM(CASE WHEN sp.status = 1 AND sp.puan != 0 THEN 1 ELSE 0 END), 0) as ogrenci_sayisi, 
+    IFNULL(AVG(CASE WHEN sp.status = 1 AND sp.puan != 0 THEN sp.puan ELSE NULL END), 0) as ortalama_puan"): object|array
     {
-        $this->db->select($select);
+        $this->db->select($select, false); // SQL'in değiştirilmesini engellemek için FALSE kullanıyoruz
         $this->db->from($this->table_name);
-        $this->db->join('siniflar', 'siniflar.sinif_id = sinavlar.sinif_id');
+        $this->db->join('siniflar', 'siniflar.sinif_id = sinavlar.sinif_id', 'left');
         $this->db->join("sinav_puanlari as sp", "sinavlar.id = sp.sinav_id", "left"); // LEFT JOIN ile birleştiriyoruz
         $this->db->group_by("sinavlar.id"); // Her sınav için toplam öğrenci sayısını hesaplıyoruz
         $this->db->where($where);
-        $this->db->where('status !=', 0); // Sınava giren öğrenciler
-        $this->db->where('puan !=', 0); // "G" notunu hariç tut
         $this->db->order_by($order);
+
         return $this->db->get()->result();
     }
 
