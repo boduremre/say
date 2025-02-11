@@ -215,6 +215,7 @@ class Sinavlar extends CI_Controller
         $this->db->where("durum", 1);
         $this->db->group_by(['okullar.kurum_kodu', 'okullar.KURUM_ADI', 'districts.DistrictName']);
         $this->db->order_by("ilce_adi", "ASC");
+        $this->db->order_by("okullar.KURUM_ADI", "ASC");
 
         $results = $this->db->get('okullar')->result_array();
 
