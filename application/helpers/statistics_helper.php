@@ -320,10 +320,10 @@ if (!function_exists('draw_bar_chart_yatay')) {
             }
 
             // Y eksenini çiz
-            imageline($image, $margin, $margin, $margin, $height - $margin, $black);
+            //imageline($image, $margin, $margin, $margin, $height - $margin, $black);
 
             // X eksenini çiz
-            imageline($image, $margin, $height - $margin, $width - $margin, $height - $margin, $black);
+            //imageline($image, $margin, $height - $margin, $width - $margin, $height - $margin, $black);
 
             // Grafiği dosyaya kaydet
             $upload_dir = FCPATH . 'uploads/graphs/';;
