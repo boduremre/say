@@ -454,7 +454,7 @@ class Sinav_puanlari_model extends CI_Model
         $this->db->from($this->table_name);
         $this->db->where($where);
         $this->db->group_by("puan_araligi");
-        $this->db->order_by("puan_araligi", "desc");
+        $this->db->order_by("puan_araligi", "asc");
 
         return $this->db->get()->result_array();
     }
