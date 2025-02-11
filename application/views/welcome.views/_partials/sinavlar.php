@@ -8,6 +8,7 @@
             <th class="text-center">Sınıf</th>
             <th class="text-center">Soru Say.</th>
             <th class="text-center">Katılan Öğr. Say.</th>
+            <th class="text-center">Ortalama Puan <i class="fa fa-info-circle" data-toggle="tooltip" title="Sınavda başarı kriteri 50 puan olarak alınmıştır."></i></th>
             <th class="text-center">Durumu</th>
             <th>İşlemler</th>
         </tr>
@@ -27,6 +28,17 @@
                 <td class="text-center"><?php echo $sinav->sinif_adi; ?></td>
                 <td class="text-center"><?php echo $sinav->soru_sayisi; ?></td>
                 <td class="text-center"><?php echo $sinav->ogrenci_sayisi; ?></td>
+                <td class="text-center">
+                    <?php if ($sinav->ortalama_puan > 49): ?>
+                        <span class="badge badge-success">
+                            <?php echo number_format($sinav->ortalama_puan, 2, ","); ?>
+                        </span>
+                    <?php else: ?>
+                        <span class="badge badge-danger">
+                            <?php echo number_format($sinav->ortalama_puan, 2, ","); ?>
+                        </span>
+                    <?php endif; ?>
+                </td>
                 <td class="text-center">
                     <?php if ($sinav->yayin_durumu == 0) { ?>
                         <span class="badge badge-primary">Beklemede</span>
