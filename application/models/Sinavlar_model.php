@@ -20,7 +20,7 @@ class Sinavlar_model extends CI_Model
      * @param string $select
      * @return object|array
      */
-    public function all(array $where = array(), string $order = "sinavlar.created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi, 
+    public function all(array $where = array("sinavlar.is_active" => 1), string $order = "sinavlar.created_at DESC", string $select = "sinavlar.*, siniflar.sinif_adi, 
     IFNULL(SUM(CASE WHEN sp.status = 1 AND sp.puan != 0 THEN 1 ELSE 0 END), 0) as ogrenci_sayisi, 
     IFNULL(AVG(CASE WHEN sp.status = 1 AND sp.puan != 0 THEN sp.puan ELSE NULL END), 0) as ortalama_puan"): object|array
     {
