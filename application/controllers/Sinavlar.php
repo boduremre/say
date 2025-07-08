@@ -73,6 +73,7 @@ class Sinavlar extends CI_Controller
             "ders_id" => $this->input->post("ders_id", TRUE),
             "sinif_id" => $this->input->post("sinif_id", TRUE),
             "yayin_durumu" => $this->input->post("yayin_durumu", TRUE),
+            "is_active" => 1,
             "dosya_adresi" => null,
             "soru_sayisi" => $this->input->post("soru_sayisi", TRUE),
             "secenek_sayisi" => 0,
