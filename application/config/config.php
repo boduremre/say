@@ -22,7 +22,7 @@
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://192.168.1.130/say/';
+$config['base_url'] = 'http://192.168.1.131/say/';
 
 /*
 |--------------------------------------------------------------------------
